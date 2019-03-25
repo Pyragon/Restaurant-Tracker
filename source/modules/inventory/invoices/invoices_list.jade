@@ -1,0 +1,21 @@
+table.table.hs-table.table-condensed.table-responsive.hours-table.widget(style='font-size: 12px;')
+    thead
+        tr
+            th.t-center Id
+            th.t-center Invoice ID
+            th.t-center Vendor
+            th.t-center Ordered/Shipped
+            th.t-center Price
+            th.t-center Ship Date
+            th.t-center View
+    tbody
+        for invoice in invoices
+            tr(data-id=invoice.getId())
+                td.b-right= invoice.getId()
+                td.b-right= invoice.getInvoiceId()
+                td.b-right= invoice.getVendor()
+                td.b-right= invoice.getQuantityShipped()+'/'+invoice.getQuantityOrdered()
+                td.b-right= numUtils.formatNumber(invoice.getPrice())
+                td.b-right= formatter.formatTimestamp(invoice.getShipDate(), 'EEE, MMM dd, YYYY')
+                td
+                    i.vis-link.fa.fa-clipboard.view-invoice

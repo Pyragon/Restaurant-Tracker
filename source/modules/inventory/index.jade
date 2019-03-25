@@ -1,0 +1,66 @@
+extend ../default
+
+block head
+    script.
+        var loaded = [];
+        var section = '';
+
+        function loadSection(section) {
+            $.post('/inventory/'+section+'/load', (ret) => {
+                var data = getJSON(ret);
+                if(data == null) return false;
+                $(`#${section}`).html(data.html);
+                return true;
+            });
+        }
+
+        $(document).ready(() => {
+
+            section = '!{section}';
+
+            history.pushState({}, 'InventorySection', '/inventory/'+section);
+
+            loadSection(section);
+
+            loaded.push(section);
+
+            $('.nav-tabs a[href="#'+section+'"]').tab('show');
+
+            $('.nav-tabs a').click(function() {
+
+                $(this).tab('show');
+
+                section = $(this).attr('href').replace('#', '');
+                if(!loaded.includes(section))
+                    if(loadSection(section)) loaded.push(section);
+                history.pushState({}, 'InventorySection', '/inventory/'+section);
+
+            });
+
+        });
+block content
+    div.container.account-area(style='min-height: 600px; padding: 20px 0;')
+        div.row
+            div.col-md-3
+                ul.nav.nav-tabs
+                    li.nav.active.account-item
+                        a(href='#invoices', data-toggle='tab') Invoices
+                    li.nav.account-item
+                        a(href='#count', data-toggle='tab') Count
+                    li.nav.account-item
+                        a(href='#invoice-items', data-toggle='tab') Invoice Items
+                    li.nav.account-item
+                        a(href='#recipe-items', data-toggle='tab') Recipe Items
+                    li.nav.account-item
+                        a(href='#meals', data-toggle='tab') Kitchen Meals
+                    li.nav.account-item
+                        a(href='#waste', data-toggle='tab') Kitchen Waste
+            div.col-md-9
+                div.widget
+                    div.tab-content.content
+                        div.tab-pane.fade.in.active#invoices
+                        div.tab-pane.fade.in#count
+                        div.tab-pane.fade.in#invoice-items
+                        div.tab-pane.fade.in#recipe-items
+                        div.tab-pane.fade.in#meals
+                        div.tab-pane.fade.in#waste

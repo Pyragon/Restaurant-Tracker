@@ -1,0 +1,16 @@
+div.widget.error-widget.left
+    p.error-widget-title Inventory
+    div.error-container
+        for error in inventoryErrors
+            if error.getLink() != null
+                a.error(href=error.getLink())= error.getShortMessage()
+            else if error.hasLeftClick()
+                p.error.leftclick.error-link(data-key=error.getKey(), data-refresh=error.refreshAfterClick(), data-type=error.getType(), data-modal=error.opensModal())= error.getShortMessage()
+            else
+                p.error= error.getShortMessage()
+    p.widget-information Food cost this month: $10,498.10
+    p.widget-information Lowest food cost this month:
+    p.widget-information Lowest food cost this year:
+    p.widget-information Highest food cost this month:
+    p.widget-information Highest food cost this year:
+    p.widget-information Total food in house: $8,100.34

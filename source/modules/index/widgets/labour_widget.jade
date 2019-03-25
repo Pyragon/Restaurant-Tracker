@@ -1,0 +1,35 @@
+div.widget.error-widget.right
+    p.error-widget-title Labour
+    for error in labourErrors
+        if error.getLink() != null
+            a.error(href=error.getLink())= error.getShortMessage()
+        else if error.hasLeftClick()
+            a.error.leftclick(href='#', data-key=error.getKey(), data-refresh=error.refreshAfterClick(), data-type=error.getType(), data-modal=error.opensModal())= error.getShortMessage()
+        else
+            p.error= error.getShortMessage()
+    p.widget-information= 'Average labour cost this month: '+numUtils.formatNumber(labourCostCache.getCachedData('get-average-labour-cost-for-month'), '')+'%'
+    p.widget-information= 'Average labour cost this year: '+numUtils.formatNumber(labourCostCache.getCachedData('get-average-labour-cost-for-year'), '')+'%'
+    -var lowestMonth = labourCostCache.getCachedData('get-lowest-labour-cost-for-month');
+    -var lowestYear = labourCostCache.getCachedData('get-lowest-labour-cost-for-year');
+    -var highestMonth = labourCostCache.getCachedData('get-highest-labour-cost-for-month');
+    -var highestYear = labourCostCache.getCachedData('get-highest-labour-cost-for-year');
+    if lowestMonth == null
+        p.widget-information Lowest labour cost this month: N/A
+    else
+        -var suffix = numUtils.getDayOfMonthSuffix(lowestMonth[0])
+        p.widget-information= 'Lowest labour cost this month: '+formatter.formatTimestamp(lowestMonth[0], "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(lowestMonth[1], '')+'%'
+    if lowestYear == null
+        p.widget-information Lowest labour cost this year: N/A
+    else
+        -var suffix = numUtils.getDayOfMonthSuffix(lowestYear[0])
+        p.widget-information= 'Lowest labour cost this year: '+formatter.formatTimestamp(lowestYear[0], "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(lowestYear[1], '')+'%'
+    if highestMonth == null
+        p.widget-information Highest labour cost this month: N/A
+    else
+        -var suffix = numUtils.getDayOfMonthSuffix(highestMonth[0])
+        p.widget-information= 'Highest labour cost this month: '+formatter.formatTimestamp(highestMonth[0], "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(highestMonth[1], '')+'%'
+    if highestYear == null
+        p.widget-information Highest labour cost this year: N/A
+    else
+        -var suffix = numUtils.getDayOfMonthSuffix(highestYear[0])
+        p.widget-information= 'Highest labour cost this year: '+formatter.formatTimestamp(highestYear[0], "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(highestYear[1], '')+'%'

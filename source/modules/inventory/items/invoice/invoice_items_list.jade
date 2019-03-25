@@ -1,0 +1,32 @@
+table.table.hs-table.table-condensed.table-responsive.hours-table.widget(style='font-size: 12px;')
+    thead
+        tr
+            th.t-center Name
+            th.t-center Display Name
+            th.t-center Vendor
+            th.t-center Item Code
+            th.t-center Price
+            th.t-center Brand
+            th.t-center Pack Count
+            th.t-center Pack Size
+            th.t-center Pack Unit
+            th.t-center Last Updated
+            th.t-center Edit
+            th.t-center Add Unit
+    tbody
+        for item in items
+            tr(data-id=item.getId())
+                td.b-right(style='font-size: 10px;')= item.getItemName()
+                td.b-right= item.getDisplayName()
+                td.b-right= item.getVendor()
+                td.b-right= item.getItemCode()
+                td.b-right= numUtils.formatNumber(item.getPrice())
+                td.b-right= item.getBrand()
+                td.b-right= item.getRealPackCount()
+                td.b-right= item.getRealPackSize()
+                td.b-right= item.getPackUnit()
+                td.b-right= formatter.formatTimestamp(item.getLastUpdated(), 'EEE, MMM dd, YYYY')
+                td.b-right
+                    i.vis-link.fa.fa-edit.edit-invoice-item
+                td.b-right
+                    i.vis-link.fa.fa-plus.add-unit

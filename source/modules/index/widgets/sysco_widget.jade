@@ -1,0 +1,22 @@
+div.widget.error-widget.right
+    p.error-widget-title Sysco Tracker
+    -var nextTruck = truckCache.getCachedData('next-truck');
+    -var lastTruck = truckCache.getCachedData('last-truck');
+    -var biggestTruck = truckCache.getCachedData('biggest-truck-this-month');
+    -var total_orders = truckCache.getCachedData('total-orders');
+    -var total_orders_price = truckCache.getCachedData('total-orders-price');
+    if nextTruck == null
+        p.widget-information Next truck: TBA
+    else
+        -var suffix = numUtils.getDayOfMonthSuffix(nextTruck.getShipDate())
+        p.widget-information= 'Next truck: '+formatter.formatTimestamp(nextTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(nextTruck.getPrice())
+    if lastTruck != null
+        -var suffix = numUtils.getDayOfMonthSuffix(lastTruck.getShipDate())
+    p.widget-information= 'Last truck: '+(lastTruck == null ? 'Error loading' : formatter.formatTimestamp(lastTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(lastTruck.getPrice()))
+    if biggestTruck == null
+        p.widget-information Error Loading...
+    else
+        -var suffix = numUtils.getDayOfMonthSuffix(biggestTruck.getShipDate())
+        p.widget-information= 'Biggest truck: '+formatter.formatTimestamp(biggestTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(biggestTruck.getPrice())
+    p.widget-information= 'Sysco orders this year: '+total_orders
+    p.widget-information= 'Total price: '+numUtils.formatNumber(total_orders_price)

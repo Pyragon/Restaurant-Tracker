@@ -1,0 +1,238 @@
+extend ../default
+
+block head
+    link(rel='stylesheet', href='/stylesheets/index.css')
+    script.
+        $(document).ready(function() {
+
+            fixAlignment();
+
+            function fixAlignment() {
+                $('.error-widget').each(function(index) {
+                    if(index < 2) return;
+                    var other = $(this).prev().prev();
+                    var height = 100-other.height();
+                    $(this).css("margin-top", height+'px');
+                });
+            }
+
+            function login() {
+                let redirect = "#{redirect}";
+                if(!redirect) redirect = '/';
+                var element = $('.main-login-wrapper')
+                var username = element.find('.username').val()
+                var password = element.find('.password').val()
+                $.post('/login', { action:'login', username:username, password:password, redirect }, (ret) => {
+                    try {
+                        var data = getJSON(ret)
+                        if(data == null) return false
+                        document.write(data.html)
+                        document.close()
+                    } catch(err) {
+                        document.write(ret);
+                        document.close();
+                    }
+                })
+                return false
+            }
+
+            $(document).on('click', '.login', login)
+
+            $(document).on('keypress', '.username', (e) => {
+                if(e.which == 13) {
+                    $('.main-login-wrapper').find('.password').focus()
+                }
+            })
+
+            $(document).on('keypress', '.password', (e) => {
+                var username = $('.main-login-wrapper').find('.username')
+                if(e.which == 13) {
+                    if($(this).length == 0)
+                        username.focus()
+                    else 
+                        login()
+                }
+            });
+
+            $('.rebuild-errors').click(function() {
+                rebuild($(this), $(this).data('type'))
+                return false;
+            });
+
+            function rebuild(element, type) {
+                $.post('/errors/rebuild/'+type, {}, ret => {
+                    var data = getJSON(ret);
+                    if(data == null) return false;
+                    let name = data.name;
+                    $.post('/errors/reload/'+type, {}, ret => {
+                        data = getJSON(ret);
+                        if(data == null) return false;
+                        reloadErrors(element, data.errors);
+                        sendAlert(`Errors for type ${name} have been rebuilt!`);
+                    })
+                })
+            }
+
+            $(document).on('click', '.leftclick', function() {
+                var key = $(this).data('key');
+                var refresh = typeof $(this).data('refresh') !== 'undefined';
+                var type = $(this).data('type');
+                var modal = typeof $(this).data('modal') !== 'undefined';
+                var element = $(this);
+                $.post('/errors/click', { key }, (ret) => {
+                    var data = getJSON(ret);
+                    if(data == null || (!refresh && !opensModal)) return false;
+                    if(refresh && !modal) {
+                        $.post('/errors/reload/'+type, {}, (ret2) => {
+                            var data = getJSON(ret2);
+                            if(data === null) return false;
+                            reloadErrors($(this), data.errors);
+                        });
+                    } else {
+                        if(!data.buttons) {
+                            sendAlert('No buttons specified!');
+                            return false;
+                        }
+                        var buttons = [];
+                        for(let button of data.buttons) {
+                            buttons.push({
+                                addClass: button.class, text: button.text, onClick($noty) {
+                                    if(button.closeOnClick === true) {
+                                        closeNoty($noty);
+                                        return false;
+                                    }
+                                    if(button.getData === true) {
+                                        var elements = {};
+                                        $('.modal-input').each(function(index) {
+                                            elements[$(this).data('name')] = $(this).val(); 
+                                        });
+                                        $('.modal-input-array').each(function(index) {
+                                            var arrayKey = $(this).data('key');
+                                            var key = $(this).find('.name').val();
+                                            var value = $(this).find('.value').val();
+                                            if(key === '' || value === '') return;
+                                            if(!elements[arrayKey]) elements[arrayKey] = [];
+                                            elements[arrayKey].push({key, value})
+                                        });
+                                        //input.obj-name = modifier name
+                                        //object-array contains key/quantity values
+                                        $('.modal-object').each(function(index) {
+                                            var key = $(this).data('key');
+                                            var objName = $(this).find('.obj-name').val();
+                                            if(!objName) return;
+                                            var obj = {};
+                                            $(this).find('.object-array').each(function(index) {
+                                                var arrayKey = $(this).find('.name').val();
+                                                var value = $(this).find('.value').val();
+                                                obj[arrayKey] = value;
+                                            });
+                                            if(!elements[key]) elements[key] = [];
+                                            elements[key].push({ objName, obj });
+                                        });
+                                        console.log(elements.modifiers);
+                                        for(var elem of Object.keys(elements)) {
+                                            if(Array.isArray(elements[elem])) {
+                                                var str = JSON.stringify(elements[elem]);
+                                                elements[elem] = str;
+                                            }
+                                        }
+                                        elements.button = button.text;
+                                        elements.key = key;
+                                        $.post('/errors/button', { data: JSON.stringify(elements) }, (ret) => {
+                                            var sData = getJSON(ret);
+                                            if(sData == null) return false;
+                                            if(sData.errors) {
+                                                for(let error of sData.errors)
+                                                    sendAlert(error);
+                                                return false;
+                                            }
+                                            if(sData.message) sendAlert(sData.message);
+                                            closeNoty($noty);
+                                            if(refresh)
+                                                $.post('/errors/recheck/'+encodeURIComponent(key), {}, (ret) => {
+                                                    var data = getJSON(ret);
+                                                    if(data === null)  return false;
+                                                    $.post('/errors/reload/'+type, {}, (ret) => {
+                                                        var data = getJSON(ret);
+                                                        if(data === null) return false;
+                                                        reloadErrors(element, data.errors);
+                                                    });
+                                                })
+                                        })
+                                    }
+                                }
+                            })
+                        }
+                        n = noty({
+                            text: data.title,
+                            type: 'confirm',
+                            layout: 'center',
+                            dismissQueue: false,
+                            template: data.html,
+                            theme: 'cryogen',
+                            buttons
+                        })
+                    }
+                });
+            });
+
+            function reloadErrors(element, list) {
+                var container = element.closest('.error-container');
+                if(!container) return;
+                container.empty();
+                for(var id in list) {
+                    var value = list[id];
+                    var error = $('<a></a>');
+                    if(!value.link && !value.hasLeftClick)
+                        error = $('<p></p>');
+                    error.addClass('error');
+                    if(value.hasLeftClick) {
+                        error.addClass('leftclick');
+                        error.data('key', value.key);
+                        if(value.refreshAfterClick)
+                            error.data('refresh', value.refreshAfterClick);
+                        if(value.opensModal)
+                            error.data('modal', value.opensModal);
+                        error.attr('href', '#');
+                    } else if(value.link)
+                        error.attr('href', value.link);
+                    error.data('type', value.type);
+                    error.html(value.shortMessage);
+                    container.append(error);
+                }
+            }
+
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+        });
+
+        function testContext() {
+            console.log($(this));
+        }
+
+block content
+    if loggedIn == false
+        div.container
+            div.widget#login-widget
+                p(style='margin: 5px auto; width: 100%; text-align: center; color: #ff0000;') You must be logged in to use this website.
+                div.main-login-wrapper(style='margin-top: 5px')
+                    p Username:
+                    input.username(type='text', placeholder='Enter username')
+                    p Password:
+                    input.password(type='password', placeholder='Enter password')
+                    div(style='padding: 20px; margin-bottom: 20px;')
+                        div.btn.btn-default.login(style='margin: auto; width: 45%; display: block;') Login
+    else
+        div.container
+            include widgets/inventory_widget
+            include widgets/labour_widget
+        div.container
+            include widgets/monthly_widget
+            include widgets/sysco_widget

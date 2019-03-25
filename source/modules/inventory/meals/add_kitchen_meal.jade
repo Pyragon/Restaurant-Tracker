@@ -1,0 +1,16 @@
+div.noty_message
+    span.noty_text
+    div.widget.register.scrollable-modal(style='margin-top: 5px;')
+        div.report_line
+            label.name Employee Name
+            input.modal-input(type='text', data-name='employee-name', placeholder='Employee Name', value=employee_name ? employee_name : '')
+        div(style='clear: both;')
+        div.report_line
+            input.name.modal-input.first(type='text', data-name='main-meal', placeholder='Mains', value=mains ? mains : '')
+            input.modal-input(type='text', data-name='main-quantity', placeholder='Quantity', value=mains_quantity ? mains_quantity : '')
+        div(style='clear: both;')
+        div.report_line
+            input.name.modal-input.first(type='text', data-name='side-meal', placeholder='Side', value=sides ? sides : '')
+            input.modal-input(type='text', data-name='side-quantity', placeholder='Quantity', value=sides_quantity ? sides_quantity : '')
+        div(style='clear: both;')
+div.noty_close

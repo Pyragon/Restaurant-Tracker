@@ -1,0 +1,106 @@
+extend ../default
+
+block head
+    script.
+        var loaded = [];
+        var section = '';
+
+        function loadSection(section, query='') {
+            $.post('/labour/'+section+'/load'+query, (ret) => {
+                var data = getJSON(ret);
+                if(data == null) return false;
+                $(`#${section}`).html(data.html);
+                return true;
+            });
+        }
+
+        function addHours(c, id=null, defaultDate=null) {
+            $.get('/labour/hours/add', { id, defaultDate }, (ret) => {
+                var data = getJSON(ret);
+                if(data == null) return false;
+                n = noty({
+                    text: 'Add hours',
+                    type: 'confirm',
+                    layout: 'center',
+                    template: data.html,
+                    dismissQueue: false,
+                    theme: 'cryogen',
+                    buttons: [{
+                        addClass: 'btn btn-primary submit-btn', text: 'Add', onClick: ($noty) => {
+                            let name = $('#name').val();
+                            let date = $('#date').val();
+                            let startTime = $('#start').val();
+                            let endTime = $('#end').val();
+                            let breakTime = $('#break').val();
+                            let role = $('option:selected').val();
+                            if(!name || !date || !startTime || !endTime) {
+                                sendAlert('All fields other than break time must be filled out.');
+                                return false;
+                            }
+                            $.post('/labour/hours/add', { name, date, startTime, endTime, breakTime, role }, (ret) => {
+                                var data = getJSON(ret);
+                                if(data == null) return false;
+                                sendAlert('Hours added successfully');
+                                closeNoty($noty);
+                                c.loadList();
+                            })
+                            closeNoty($noty);
+                        }
+                    },
+                    {
+                        addClass: 'btn btn-danger', text: 'Cancel', onClick: closeNoty
+                    }]
+                });
+            });
+        }
+
+        $(document).ready(() => {
+            section = '!{section}';
+
+            let query='';
+            if(section.includes('?')) {
+                query = section.substring(section.indexOf('?'));
+                section = section.substring(0, section.indexOf('?'));
+            }
+
+            history.pushState({}, 'LabourSection', '/labour/'+section);
+
+            loadSection(section, query);
+
+            loaded.push(section);
+
+            $('.nav-tabs a[href="#'+section+'"]').tab('show');
+
+            $('.nav-tabs a').click(function() {
+                $(this).tab('show');
+
+                section = $(this).attr('href').replace("#", "")
+                if(!loaded.includes(section)) {
+                    if(loadSection(section))
+                        loaded.push(section);
+                }
+                history.pushState({}, "LabourSection", "/labour/"+section);
+
+            })
+        });
+
+block content
+    div.container.account-area(style='min-height: 600px; padding: 20px 0;')
+        div.row
+            div.col-md-3
+                ul.nav.nav-tabs
+                    li.nav.active.account-item
+                        a(href='#hours', data-toggle='tab') Hours
+                    li.nav.account-item
+                        a(href='#tips', data-toggle='tab') Tips
+                    li.nav.account-item
+                        a(href='#employees', data-toggle='tab') Employees
+                    li.nav.account-item
+                        a(href='#sales', data-toggle='tab') Sales
+            div.col-md-9
+                div.widget
+                    div.tab-content.content
+                        div.tab-pane.fade.in.active#hours
+                        div.tab-pane.fade.in#tips
+                        div.tab-pane.fade.in#employees
+                        div.tab-pane.fade.in#sales

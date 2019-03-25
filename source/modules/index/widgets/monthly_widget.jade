@@ -1,0 +1,20 @@
+div.widget.error-widget.left
+    -var highest = monthlyTrackerCache.getCachedData('highest-day-this-month');
+    -var projected = monthlyTrackerCache.getCachedData('projected-sales');
+    p.error-widget-title Monthly Tracker
+    p.widget-information= 'Current sales this month: '+numUtils.formatNumber(monthlyTrackerCache.getCachedData('current-sales'))
+    if highest == null
+        p.widget-information Highest sales in a day this month: N/A
+    else
+        -var suffix = numUtils.getDayOfMonthSuffix(highest.getDate())
+        p.widget-information= 'Highest sales in a day this month: '+formatter.formatDate(highest.getDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(highest.getPrice())
+    -var highest = monthlyTrackerCache.getCachedData('highest-day-this-year');
+    if highest == null
+        p.widget-information Highest sales in a day this year: N/A
+    else
+        -var suffix = numUtils.getDayOfMonthSuffix(highest.getDate())
+        p.widget-information= 'Highest sales in a day this year: '+formatter.formatDate(highest.getDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(highest.getPrice())
+    if projected == null
+        p.widget-information Projected sales this month: N/A
+    else
+        p.widget-information= 'Projected sales this month: '+numUtils.formatNumber(projected)

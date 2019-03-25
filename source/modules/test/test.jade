@@ -1,0 +1,82 @@
+doctype html
+html(lang='en')
+    head
+        title Smitty's Tracker
+        meta(name='description', content="Tracker for Smitty's information")
+        meta(name='keywords', content='')
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(http-equiv='X-UA-Compatible', content='IE=9')
+        meta(name='viewport', content='width = device-width, initial-scale = 1')
+        link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css', media='screen')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        link(rel='stylesheet', href='/stylesheets/fonts.css')
+
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', integrity='sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49', crossorigin='anonymous')
+        script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js', integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo', crossorigin='anonymous')
+        link(rel='stylesheet', type='text/css', href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css', integrity='sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO', crossorigin='anonymous')
+        script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js', integrity='sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy', crossorigin='anonymous')
+        block head
+    body
+        div#page-container
+            nav.navbar.navbar-default.cryogen-nav(role='navigation')
+            div#main-content
+                div.container
+                    div.row
+                        div.col-md-4
+                            input.modal-input(type='text', placeholder='Fuck me')
+                        div.col-md-4
+                            input.modal-input(type='text', placeholder='Fuck me')
+                        div.col-md-4
+                            input.modal-input(type='text', placeholder='Fuck me')
+                block content
+
+            div(class='footer')
+                div(class='container')
+                    div(class='row')
+                        -var isCody = loggedIn && user.getUsername() == 'cody';
+                        div(class='col-md-'+(isCody ? '3' : '4'))
+                            h3 Inventory
+                            ul
+                                li
+                                    a(href='/inventory/invoices/add') Input Invoice
+                                li
+                                    a(href='/inventory/invoices') View Invoices
+                                li
+                                    a(href='/inventory/counts/add') Add Count
+                                li
+                                    a(href='/inventory/counts') View Counts
+                        div(class='col-md-'+(isCody ? '3' : '4'))
+                            h3 Items
+                            ul
+                                li
+                                    a(href='/items/add') Add Item
+                                li
+                                    a(href='/items') View Items
+                                li
+                                    a(href='/items/menu/add') Add Menu Item
+                                li
+                                    a(href='/items/menu') View Menu Items
+                        div(class='col-md-'+(isCody ? '3' : '4'))
+                            h3 Labour
+                            ul
+                                li
+                                    a(href='/labour/hours/add') Add Hours
+                                li
+                                    a(href='/labour/hours') View Hours
+                                li
+                                    a(href='/labour/tips/add') Add Tips
+                                li
+                                    a(href='/labour/tips') View Tips
+                        if isCody
+                            div.col-md-3
+                                h3 Admin
+                                ul
+                                    li
+                                        a#clear-cache(href='#') Reset Cache
+                                    li
+                                        a(href='/') Default
+                                    li
+                                        a(href='/') Rebuild Labour Errors
+                                    li
+                                        a(href='/') Rebuild Inventory Errors    

@@ -1,0 +1,16 @@
+extend ../default
+
+block head
+    link(rel='stylesheet', href='/stylesheets/index.css')
+
+block content
+    if loggedIn == false
+        div.container
+            div.row
+                div.col-6(style='width: 200px; height: 200px; border: 1px solid #000;')
+                div.col-6(style='width: 200px; height: 200px; border: 1px solid #000;')
+    else
+        div.container
+            div.row
+                div.col-md-6(style='width: 200px; min-height: 200px; border: 1px solid #000;')
+                div.col-md-6(style='width: 200px; min-height: 200px; border: 1px solid #000;')

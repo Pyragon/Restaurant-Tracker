@@ -1,0 +1,42 @@
+div.noty_message
+    span.noty_text
+    div.widget.register.scrollable-modal(style='margin-top: 5px;')
+        div.report_line
+            label.name Name
+            input.modal-input(type='text', data-name='name', placeholder='Name', value=name ? name : '')
+        div(style='clear: both;')
+        div.report_line
+            label.name Display Name
+            input.modal-input(type='text', data-name='display-name', placeholder='Display Name', value=display_name ? display_name : '')
+        div(style='clear: both;')
+        div.report_line
+            label.name Vendor
+            div.smit-options
+                select
+                    for vendor in vendors
+                        option(value=vendor.getName(), data-id=vendor.getId())
+        div(style='clear: both;')
+        div.report_line
+            label.name Item Code
+            input.modal-input(type='text', data-name='item-code', placeholder='Item Code', value=item_code ? item_code : '')
+        div(style='clear: both;')
+        div.report_line
+            label.name Price
+            input.modal-input(type='text', data-name='price', placeholder='Price', value=price ? price : '')
+        div(style='clear: both;')
+        div.report_line
+            label.name Brand
+            input.modal-input(type='text', data-name='brand', placeholder='Brand', value=brand ? brand : '')
+        div(style='clear: both;')
+        div.report_line
+            label.name Pack Count
+            input.modal-input(type='text', data-name='pack-count', placeholder='Pack Count', value=pack_count ? pack_count : '')
+        div(style='clear: both;')
+        div.report_line
+            label.name Pack Size
+            input.modal-input(type='text', data-name='pack-size', placeholder='Pack Size', value=pack_size ? pack_size : '')
+        div.report_line
+            label.name Pack Unit
+            input.modal-input(type='text', data-name='pack-unit', placeholder='Pack Unit', value=pack_unit ? pack_unit : '')
+        i.fa.fa-plus-circle#add-modifier(style='margin: auto auto 10px auto; cursor: pointer;')
+div.noty_close

@@ -1,0 +1,26 @@
+table.table.hs-table.table-condensed.table-responsive.hours-table.widget(style='font-size: 12px;')
+    thead
+        tr
+            th.t-center ID
+            th.t-center Employee
+            th.t-center Main
+            th.t-center Side
+            th.t-center Cost to Make
+            th.t-center Date
+            th.t-center Last Updated
+            th.t-center Edit
+            th.t-center View
+    tbody
+        for meal in meals
+            tr(data-id=meal.getId())
+                td.b-right= meal.getId()
+                td.b-right= meal.getEmployeeName()
+                td.b-right= meal.getMain()
+                td.b-right= meal.getSide()
+                td.b-right= numUtils.formatNumber(meal.getCostToMake())
+                td.b-right= formatter.formatTimestamp(meal.getDate(), 'EEE, MMM dd, YYYY')
+                td.b-right= formatter.formatTimestamp(meal.getLastUpdated(), 'EEE, MMM dd, YYYY')
+                td
+                    i.vis-link.fa.fa-edit.edit-meal
+                td
+                    i.vis-link.fa.fa-edit.view-meal

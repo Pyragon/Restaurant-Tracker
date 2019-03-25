@@ -1,0 +1,36 @@
+div.noty_message
+    span.noty_text
+    div.widget.register(style='margin-top: 5px')
+        div.report_line
+            label.name First Name
+            input#first-name(type='text', value=editing == null ? '' : editing.getFirstName(), maxlength='40')
+        div(style='clear: both;')
+        div.report_line
+            label.name Last Name
+            input#last-name(type='text', value=editing == null ? '' : editing.getLastName(), maxlength='40')
+        div(style='clear: both;')
+        div.report_line
+            label.name Wage
+            input#wage(type='number', step='0.01', value=editing == null ? '' : editing.getWage(), maxlength='40')
+        div(style='clear: both;')
+        div.report_line
+            label.name Default Role
+            div.smit-options
+                select
+                    -var i = 0
+                    for id in roles.getNames().keySet()
+                        if id == (editing == null ? 0 : editing.getDefaultRole())   
+                            option(value=roles.getNames().get(id), data-id=id, selected="selected")=roles.getNames().get(id)
+                        else
+                            option(value=roles.getNames().get(id), data-id=id)= roles.getNames().get(id)
+                        -i = i+1
+        div(style='clear: both;')
+        div.report_line
+            label.name Start Date
+            input#start-date(type='text', value=editing == null ? '' : formatter.formatTimestamp(editing.getStartDate(), 'MM/dd/YYYY'))
+        div(style='clear: both;')
+        div.report_line
+            label.name End Date
+            input#end-date(type='text', value=editing == null ? '' : editing.getEndDate() == null ? '' : formatter.formatTimestamp(editing.getEndDate(), 'MM/dd/YYYY'))
+        div(style='clear: both;')
+div.noty_close

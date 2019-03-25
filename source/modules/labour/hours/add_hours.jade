@@ -1,0 +1,51 @@
+script.
+    $(document).ready(() => {
+
+        $('#name').blur(function() {
+            var name = $(this).val();
+            $.post('/labour/hours/check-role', { name }, ret => {
+                var data = getJSON(ret);
+                if(data == null) return false;
+                $("option:selected").removeAttr("selected");
+                $(`option[data-id=${data.id}]`).prop('selected', true);
+                sendAlert(`Loaded default role: ${data.name}.`);
+            });
+        });
+
+    });
+div.noty_message
+    span.noty_text
+    div.widget.register(style='margin-top: 5px;')
+        div.report_line
+            label.name Name
+            input#name(type='text', placeholder='Employee name', value=employee != null ? (employee.getFirstName()+' '+employee.getLastName()) : '')
+        div(style='clear: both;')
+        div.report_line
+            label.name Date
+            input#date(type='text', placeholder='Date in MM/dd/yyyy', value=formatter.formatDate(hours == null ? date : hours.getDate(), 'MM/dd/yyyy'))
+        div(style='clear: both;')
+        div.report_line
+            label.name Start Time
+            input#start(type='text', placeholder='Start time (24 hours)', value=hours == null ? '' : formatter.formatTimestamp(hours.getStartTime(), 'h:mm a'))
+        div(style='clear: both;')
+        div.report_line
+            label.name End Time
+            input#end(type='text', placeholder='End time (24 hours)', value=hours == null ? '' : formatter.formatTimestamp(hours.getEndTime(), 'h:mm a'))
+        div(style='clear: both;')
+        div.report_line
+            label.name Break Length
+            input#break(type='text', placeholder='Break length, blank if none', value=hours == null || hours.getBreakLength() == 0 ? '' : hours.getBreakLength()+' min')
+        div(style='clear: both;')
+        div.report_line
+            label.name Paid as Role
+            div.smit-options
+                select
+                    -var i = 0
+                    for id in roles.getNames().keySet()
+                        if (hours != null && id == hours.getRoleId()) || (employee != null && id == employee.getDefaultRole()) || id == 0  
+                            option(value=roles.getNames().get(id), data-id=id, selected="selected")=roles.getNames().get(id)
+                        else
+                            option(value=roles.getNames().get(id), data-id=id)= roles.getNames().get(id)
+                        -i = i+1
+        div(style='clear: both;')
+div.noty_close

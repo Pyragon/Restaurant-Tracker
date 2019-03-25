@@ -1,0 +1,93 @@
+Smitty's Tracker
+
+General:
+    ☐ Add 'sort by' options to all tables
+    ☐ Ensure all dates use MM/dd/yyyy
+    ☐ Display as integers instead of doubles on whole numbers (1 vs 1.0)
+
+Misc:
+    ☐ Add message to login users on first login to change from default password
+
+Labour:
+    Hours:
+        ☐ Ensure hours are all be counted correctly
+        ☐ Remake styling for 'default date' on hours page
+        ☐ Create modal to add multiple hours in one go (for day)
+        ✔ Create error if previous days hours not added by 11am next day @done(19-03-03 22:43)
+        ☐ ^^ Use above multiple hours modal
+        ✘ Filter by each, day, month @cancelled(19-03-03 22:46)
+        ✔ Create filter for hours worked using <, >, <=, >= @done(19-03-05 16:43)
+    Sales:
+        ☐ Filter by day, month, year
+        ☐ Add filters to search from
+        Filters:
+            ✔ date @done(19-03-05 16:57)
+            ☐ items sold (#-#)
+            ☐ total price ($#-$#)
+            ☐ total hours (#-#)
+            ☐ labour cost (#-#)
+        ☐ All for <, >, <=, and >= symbols to be used instead of spans
+        ☐ items_sold: <900 would return all days with under 20 items sold
+        ☐ Include example
+    Employees:
+        ☐ Get all employees proper start dates
+        ☐ Get all employees proper wages
+        ☐ Ensure all search filters work
+        ☐ Figure out multiple hires of same person
+    Tips:
+        ☐ Allow adding of tipouts from servers
+        ☐ Error to be added when you add a server's hours
+        ☐ Button to calculate cook's tipout from previous week's tips
+
+Sysco:
+    ☐ Ensure invoices are being added correctly
+    ☐ Investigate possible bug with 'adding' to an invoice actually replacing items
+    ☐ Ensure price changes are being handled correctly
+
+Inventory:
+    Invoice:
+        ☐ Ability to add non-sysco invoice
+    Counts:
+        ☐ Include section for counts
+        ☐ List of sub-sections (FOH, Cooler, etc)
+        ☐ Clicking sub-section will open modal with list of all the products
+        ☐ Ability to edit position of products within this list
+        ☐ Abiilty to edit position of sub-sections in count section
+        ☐ Ability to add items to lists
+        ☐ Ability to remove items from lists
+        ☐ Ability to physically count the items
+        Possibly:
+            ☐ Possibly be able to just scan the UPC on the box, and enter count in popup modal
+    Invoice Items:
+        ☐ Add ability to edit invoice items
+        ☐ When adding invoice items from Sysco orders, if ordering b/c, pack size/count is correct, price is correct, ensure it's being added as only 1 item though
+        ☐ Figure out yields
+    Recipe Items:
+        ☐ Finish adding all recipe items
+        ☐ Add filters
+        ☐ Add example
+        ☐ Add functionality to 'Add Recipe Item' button
+
+Admin section:
+    ☐ Create section for admin
+    ☐ Create/remove login users
+    ☐ Change password of login users
+    ☐ Add email to login users (This is where password resets will be sent)
+
+Archive:
+  ✔ When counting hours for daily sales, it rounds hours creating incorrect information @done(2019-02-25 15:00) @project(Bugs) @project(Bugs)
+  ✔ Remake module-helper and search-manager to be modular (using classes) @done(19-03-02 15:32) @project(Remake)
+  ✔ Remake inventory subsections to use module-helper @done(19-03-02 16:37) @project(Remake)
+  ✔ Invoice Items @done(19-03-02 16:27) @project(Remake)
+  ✔ Recipe Items @done(19-03-02 16:37) @project(Remake)
+  ✔ Invoices @done(19-03-02 16:27) @project(Remake)
+  ✔ Remake labour subsections to use module-helper @done(19-03-02 16:37) @project(Remake)
+  ✔ Hours @done(19-03-02 16:15) @project(Remake)
+  ✔ Tips @done(19-03-02 16:23) @project(Remake)
+  ✔ Employees @done(19-03-02 16:15) @project(Remake)
+  ✔ Sales @done(19-03-02 16:17) @project(Remake)
+  ✔ Errors to use 'parameters' that can save and be read @done(19-03-02 16:37) @project(Remake.Error Manager)
+  ✔ Editing hours does not allow pressing enter in a text input to submit @done(2019-02-25 15:01) @project(Labour / Hours) @project(Labour.Hours)
+  ✔ Add full_name filter @done(19-03-02 16:38) @project(Labour.Hours)
+  ✔ List to view all items purchased from vendors (will be what is on acutal invoice) @done(19-03-02 15:32) @project(Inventory.Invoice Items)
+  ✔ Add filters @done(19-03-02 15:32) @project(Inventory.Invoice Items)

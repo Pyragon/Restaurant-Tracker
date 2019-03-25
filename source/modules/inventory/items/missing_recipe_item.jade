@@ -1,0 +1,91 @@
+script.
+    $(document).ready(() => {
+
+        $(window).resize(() => {
+            var maxHeight = $(window).height()*.5;
+            $('.scrollable-modal').css('max-height', maxHeight+'px');
+        });
+
+        $(window).resize();
+
+        let recipe = '!{recipe}';
+        if(recipe != '') {
+            recipe = JSON.parse(recipe);
+            for(var key of Object.keys(recipe)) {
+                var value = recipe[key];
+                var val = value.quantity+' '+value.unit;
+                var reportLine = $('<div class="report_line modal-input-array" data-key="recipe"></div>');
+                var name = $('<input class="first name" type="text" data-name="code" placeholder="Code or Name"></input>');
+                var value = $('<input class="second value" type="text" data-name="quantity" placeholder="(q) (unit)"></input>');
+                name.val(key);
+                value.val(val);
+                reportLine.append(name);
+                reportLine.append(value);
+                $('.recipe').prepend(reportLine);
+            }
+        }
+
+        $('#add-recipe-line').click(function() {
+            var div = $('<div class="report_line modal-input-array" data-key="recipe"></div>');
+            var first = $('<input class="first name", type="text", data-name="code", placeholder="Code or Name"></input>');
+            var second = $('<input class="value second", type="text", data-name="quantity", placeholder="(q) (unit)"></input>');
+            div.append(first);
+            div.append(second);
+            $('.recipe').append(div);
+            $('.scrollable-modal').scrollTop($(this).offset().top);
+        });
+
+        $('#add-modifier').click(() =>{
+            let div = $('<div class="report_line modal-tripple-array" data-key="modifiers"></div>');
+            let col1 = $('<div class="col-xs-4"></div>');
+            let name = $('<input class="triple-value" type="text" data-name="modifier-name" placeholder="Modifier Name"></input>');
+            let col2 = $('<div class="col-xs-4"></div>');
+            let code = $('<input class="triple-value" type="text" data-name="code" placeholder="Code or Name"></input>');
+            let col3 = $('<div class="col-xs-4"></div>');
+            let quant = $('<input class="triple-value" type="text" data-name="quantity" placeholder="(q) (unit)"></input>');
+            col1.append(name);
+            col2.append(code);
+            col3.append(quant);
+            div.append(col1);
+            div.append(col2);
+            div.append(col3);
+            $('.modifiers').find('.row').append(div);
+            $('.scrollable-modal').scrollTop($('.scrollable-modal')[0].scrollHeight);
+        });
+
+    });
+div.noty_message
+    span.noty_text
+    div.widget.register.scrollable-modal(style='margin-top: 5px;')
+        div.report_line
+            label.name Item Name
+            input.modal-input(type='text', data-name='item-name', placeholder='Item Name', value=item_name ? item_name : '')
+        div(style='clear: both;')
+        div.report_line
+            label.name Bill Name
+            input.modal-input(type='text', data-name='bill-name', placeholder='Bill Name', value=bill_name ? bill_name : '')
+        div(style='clear: both;')
+        div.report_line
+            label.name Price
+            input.modal-input(type='text', data-name='price', placeholder='Price', value=price != null ? price : '')
+        div(style='clear: both;')
+        h3(style='margin-top: 0px;') Recipe
+        div.recipe
+            div.report_line.modal-input-array(data-key='recipe')
+                input.first.name(type='text', data-name='code', placeholder='Code or Name')
+                input.second.value(type='text', data-name='quantity', placeholder='(q) (unit)')
+        div(style='clear: both;')
+        i.fa.fa-plus-circle#add-recipe-line(style='margin: auto auto 10px auto; cursor: pointer;')
+        h3 Modifiers
+        div.modifiers
+            div.container(style='width: 310px;')
+                div.row
+                    div.report_line.modal-triple-array(data-key='modifiers')
+                        div.col-xs-4
+                            input.triple-value(type='text', data-name='modifier-name', placeholder='Modifier Name')
+                        div.col-xs-4
+                            input.triple-value(type='text', data-name='code', placeholder='Code or Name')
+                        div.col-xs-4
+                            input.triple-value(type='text', data-name='quantity', placeholder='(q) (unit)')
+        i.fa.fa-plus-circle#add-modifier(style='margin: auto auto 10px auto; cursor: pointer;')
+div.noty_close

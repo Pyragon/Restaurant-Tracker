@@ -1,0 +1,55 @@
+script.
+    $(document).ready(() => {
+
+        $(window).resize(() => {
+            var maxHeight = $(window).height()*.5;
+            $('.scrollable-modal').css('max-height', maxHeight+'px');
+        });
+
+        $(window).resize();
+
+        let recipe = '!{recipe}';
+        if(recipe != '') {
+            recipe = JSON.parse(recipe);
+            for(var key of Object.keys(recipe)) {
+                var value = recipe[key];
+                var val = value.quantity+' '+value.unit;
+                var reportLine = $('<div class="report_line modal-input-array" data-key="recipe"></div>');
+                var name = $('<input class="first name" type="text" data-name="code" placeholder="Code or Name"></input>');
+                var value = $('<input class="second value" type="text" data-name="quantity" placeholder="(q) (unit)"></input>');
+                name.val(key);
+                value.val(val);
+                reportLine.append(name);
+                reportLine.append(value);
+                $('.recipe').prepend(reportLine);
+            }
+        }
+
+        $('.fa-plus-circle').click(() => {
+            var bottom = n.$bar.position().top + n.$bar.outerHeight(true);
+            var top = n.$bar.offset().top;
+            var diff = top - $(window).scrollTop();
+            var div = $('<div class="report_line modal-input-array" data-key="recipe"></div>');
+            var first = $('<input class="first name", type="text", data-name="code", placeholder="Code or Name"></input>');
+            var second = $('<input class="value second", type="text", data-name="quantity", placeholder="(q) (unit)"></input>');
+            div.append(first);
+            div.append(second);
+            $('.recipe').append(div);
+            var height = $('.scrollable-modal')[0].scrollHeight;
+            console.log(height);
+            $('.scrollable-modal').scrollTop(height);
+        });
+
+    });
+div.widget.register.scrollable-modal(style='margin-top: 5px;')
+    div.report_line
+        label.name Price
+        input.modal-input(type='text', data-name='price', placeholder='Price', value=price != null ? price : '')
+    div(style='clear: both;')
+    h3(style='margin-top: 0px;') Recipe
+    div.recipe
+        div.report_line.modal-input-array(data-key='recipe')
+            input.first.name(type='text', data-name='code', placeholder='Code or Name')
+            input.second.value(type='text', data-name='quantity', placeholder='(q) (unit)')
+    div(style='clear: both;')
+    i.fa.fa-plus-circle(style='margin: auto auto 10px auto; cursor: pointer;')

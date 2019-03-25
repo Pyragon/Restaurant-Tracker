@@ -1,0 +1,32 @@
+script.
+    let c;
+    (function() {
+        import('/js/module-helper.js').then(mod => {
+            c = new mod.ModuleHelper('sales', '/labour/sales');
+            c.setup();
+        })
+    })();
+h5 Sales
+p.small.info The following is all the day's sales with information for labour hours
+p.small.info Use the buttons on the right to search between days
+div.row
+    div.iactions
+        div
+            div(style='float: left; margin: 10px 10px')
+                div.col-xs-4
+                    p.color-grey.search-info Click the search icon to begin searching through days. Search using filters with filter:value and separate with commas. True/false or yes/no can be used.
+                div.col-xs-4
+                    p.color-grey.search-info Filters: 
+                div.col-xs-4
+                    p.color-grey.search-info Example: 
+div.row(style='padding: 15px;')
+    div#search(style='clear: both; float: right; margin-bottom: 15px; text-align: left;')
+        div
+            span.fa.fa-search.link#search-icon(style='display: inline; float: right; padding-left: 5px; margin-top: 7px;')
+            div#search-pin(style='float: right; display: none;', display='none')
+                input.form-control(type='text', placeholder='Search', style='max-width: 150px; max-height: 30px; background: #111; border: #000; display: inline!important;')
+    div.search-filters(style='clear: both; float: right;')
+    div.col-md-12(style='border: 1px solid #000; clear: both; margin-bottom: 10px;')
+    div#main
+    div.pages
+        div#pages
