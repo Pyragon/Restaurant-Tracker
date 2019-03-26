@@ -1,0 +1,9 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "source/js/ui/package.json"
+      ]
+    }
+  }
+}
