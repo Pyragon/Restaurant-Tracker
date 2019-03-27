@@ -61,6 +61,50 @@ html
                     return false;
                 });
 
+                $('#change-pass').click(() => {
+                    $.get('/utilities/change-pass', {}, ret => {
+                        let data = getJSON(ret);
+                        if(data == null) return false;
+                        n = noty({
+                            text: 'Change Password',
+                            type: 'confirm',
+                            layout: 'center',
+                            template: data.html,
+                            dismissQueue: false,
+                            theme: 'cryogen',
+                            buttons: [{
+                                addClass: 'btn btn-primary submit-btn', text: 'Change', onClick: ($noty) => {
+                                    let oldPass = $('input[data-name="current-pass"]').val();
+                                    let newPass = $('input[data-name="new-pass"]').val();
+                                    let newPassConfirm = $('input[data-name="new-pass-confirm"]').val();
+                                    if(newPass !== newPassConfirm) {
+                                        sendAlert('New passwords do not match.');
+                                        return false;
+                                    }
+                                    if(newPass.length < 6) {
+                                        sendAlert('New password must be at least 6 characters.');
+                                        return false;
+                                    }
+                                    $.post('/utilities/change-pass', { oldPass, newPass }, ret => {
+                                        let data = getJSON(ret);
+                                        if(data == null) return false;
+                                        sendAlert('Password has been successfully changed. Make sure you write it down. This page will refresh in 10 seconds and you will have to re-login.');
+                                        closeNoty($noty);
+                                        setTimeout(() => {
+                                            location.reload();
+                                        }, 10000);
+                                    });
+                                }
+                            },
+                            {
+                                addClass: 'btn btn-danger', text: 'Cancel', onClick: closeNoty
+                            }]
+                        });
+                        //TODO - run function every second to count down remaining time
+                        //TODO - change noty timeout to 10 seconds
+                    });
+                    return false;
+                });
             });
 
         body
@@ -127,7 +171,7 @@ html
                                         a(href='/labour/tips/add') Add Tips
                                     li
                                         a(href='/labour/tips') View Tips
-                            if isCody
+                            if loggedIn
                                 div.col-md-3
                                     h3 Admin
                                     ul
@@ -142,3 +186,6 @@ html
                                                 a.rebuild-errors(href='/', data-type=0) Rebuild Labour Errors
                                             li
                                                 a.rebuild-errors(href='/', data-type=1) Rebuild Inventory Errors
+                                        li
+                                            a#change-pass(href='#') Change Password
+                                        

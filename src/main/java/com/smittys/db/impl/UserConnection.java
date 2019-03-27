@@ -44,6 +44,9 @@ public class UserConnection extends DatabaseConnection {
                     e.printStackTrace();
                 }
                 break;
+            case "change-pass":
+                set("user_data", "hash=?", "id=?", data[1], data[2]);
+                break;
             case "get-user":
                 return select("user_data", "username=?", GET_USER, (String) data[1]);
             case "get-user-from-id":

@@ -3,7 +3,10 @@ package com.smittys.utils;
 import com.mysql.jdbc.StringUtils;
 import com.smittys.Tracker;
 import com.smittys.db.impl.InventoryConnection;
+import com.smittys.db.impl.UserConnection;
+import com.smittys.entities.User;
 import com.smittys.managers.EmailManager;
+import com.smittys.modules.WebModule;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -13,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+
+import static com.smittys.modules.WebModule.error;
 
 public class Utilities {
 
@@ -41,6 +46,24 @@ public class Utilities {
                 prop.put("success", true);
 //                prop.put("error", "Needs to be added to a queue.");
                 EmailManager.checkEmails();
+                break;
+            case "change-pass":
+                if (request.requestMethod().equals("GET")) {
+                    prop.put("success", true);
+                    prop.put("html", WebModule.render("./source/modules/utils/change_pass.jade", new HashMap<>(), request, response));
+                    break;
+                }
+                String oldPass = request.queryParams("oldPass");
+                String newPass = request.queryParams("newPass");
+                User user = WebModule.getUser(request);
+                Object[] data = UserConnection.connection().handleRequest("compare", user.getUsername(), oldPass);
+                if (data == null) return error("Error loading employee data. Please report this to Cody.");
+                boolean correct = (boolean) data[0];
+                if (!correct) return error("Invalid current password. Please try again.");
+                String hash = BCrypt.hashPassword(newPass, user.getSalt());
+                UserConnection.connection().handleRequest("change-pass", hash, user.getId());
+                UserConnection.connection().handleRequest("remove-all-sess", user.getUsername());
+                prop.put("success", true);
                 break;
             default:
                 prop.put("success", false);
