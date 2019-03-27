@@ -1,2 +1,11 @@
 props.json
 restarter
+target
+data/sales/*
+.idea
+.settings
+.vscode
+.classpath
+.factorypath
+.project
+item-codes.txt
