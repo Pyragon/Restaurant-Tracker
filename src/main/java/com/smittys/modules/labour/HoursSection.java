@@ -161,6 +161,7 @@ public class HoursSection implements WebSection {
                 if (roleId == -1) return error("Role id is not valid!");
                 HourData hourData = new HourData(-1, employee.getId(), date, startStamp, endStamp, roleId, breakLength, employee.getWage(), null, null);
                 LabourConnection.connection().handleRequest("add-hours", hourData);
+                Tracker.getInstance().getErrorManager().rebuild(Error.ErrorParent.LABOUR);
                 if (roleId == RoleNames.getId("server")) {
                     dateString = format.format(date);
                     Error error = Tracker.getInstance().getErrorManager().getError("missing-tips-" + employee.getId() + "-" + dateString);
