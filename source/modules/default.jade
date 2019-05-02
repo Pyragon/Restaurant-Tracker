@@ -178,8 +178,7 @@ html
                 div(class='footer')
                     div(class='container')
                         div(class='row')
-                            -var isCody = loggedIn && user.getUsername() == 'cody';
-                            div(class='col-md-'+(isCody ? '3' : '4'))
+                            div.col-md-3
                                 h3 Inventory
                                 ul
                                     li
@@ -190,7 +189,7 @@ html
                                         a(href='/inventory/counts/add') Add Count
                                     li
                                         a(href='/inventory/counts') View Counts
-                            div(class='col-md-'+(isCody ? '3' : '4'))
+                            div.col-md-3
                                 h3 Items
                                 ul
                                     li
@@ -201,7 +200,7 @@ html
                                         a(href='/items/menu/add') Add Menu Item
                                     li
                                         a(href='/items/menu') View Menu Items
-                            div(class='col-md-'+(isCody ? '3' : '4'))
+                            div.col-md-3
                                 h3 Labour
                                 ul
                                     li
@@ -229,7 +228,6 @@ html
                                                 a.rebuild-errors(href='/', data-type=1) Rebuild Inventory Errors
                                         li
                                             a#change-pass(href='#') Change Password
-                                        if isCody
-                                            li
-                                                a#create-user(href='#') Create User
+                                        li
+                                            a#create-user(href='#') Create User
                                         
