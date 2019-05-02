@@ -35,15 +35,13 @@ public class UserConnection extends DatabaseConnection {
                 String salt = user.getSalt();
                 return new Object[]{BCrypt.hashPassword(password, salt).equals(hash), salt};
             case "create-user":
-                username = (String) data[1];
-                hash = (String) data[2];
-                salt = (String) data[3];
                 try {
-                    insert("user_data", username, hash, salt, "DEFAULT");
+                    insert("user_data", ((User) data[1]).data());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    return null;
                 }
-                break;
+                return new Object[]{};
             case "change-pass":
                 set("user_data", "hash=?", "id=?", data[1], data[2]);
                 break;

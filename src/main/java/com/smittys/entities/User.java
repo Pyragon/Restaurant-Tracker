@@ -20,4 +20,8 @@ public class User {
     public String getDisplayName() {
         return firstName + " " + lastName;
     }
+
+    public Object[] data() {
+        return new Object[]{"DEFAULT", username, firstName, lastName == null ? "" : lastName, hash, salt, "DEFAULT"};
+    }
 }

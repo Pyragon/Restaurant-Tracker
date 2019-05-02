@@ -47,6 +47,37 @@ public class Utilities {
 //                prop.put("error", "Needs to be added to a queue.");
                 EmailManager.checkEmails();
                 break;
+            case "create-user":
+                if (!WebModule.isLoggedIn(request)) {
+                    prop.put("success", false);
+                    prop.put("error", "You must be logged in to do this.");
+                    break;
+                }
+                User user = WebModule.getUser(request);
+                if (!user.getUsername().equalsIgnoreCase("cody")) {
+                    prop.put("success", false);
+                    prop.put("error", "Only Cody is allowed to do this.");
+                    break;
+                }
+                if (request.requestMethod().equals("GET")) {
+                    prop.put("success", true);
+                    prop.put("html", WebModule.render("./source/modules/utils/create_user.jade", new HashMap<>(), request, response));
+                    break;
+                }
+                String username = request.queryParams("username");
+                String firstName = request.queryParams("firstName");
+                String lastName = request.queryParams("lastName");
+                String password = request.queryParams("password");
+                String salt = BCrypt.generateSalt();
+                String hash = BCrypt.hashPassword(password, salt);
+                Object[] data = UserConnection.connection().handleRequest("create-user", new User(-1, username, firstName, lastName, hash, salt, null));
+                if (data == null) {
+                    prop.put("success", false);
+                    prop.put("error", "Error adding user.");
+                    break;
+                }
+                prop.put("success", true);
+                break;
             case "change-pass":
                 if (request.requestMethod().equals("GET")) {
                     prop.put("success", true);
@@ -55,12 +86,12 @@ public class Utilities {
                 }
                 String oldPass = request.queryParams("oldPass");
                 String newPass = request.queryParams("newPass");
-                User user = WebModule.getUser(request);
-                Object[] data = UserConnection.connection().handleRequest("compare", user.getUsername(), oldPass);
+                user = WebModule.getUser(request);
+                data = UserConnection.connection().handleRequest("compare", user.getUsername(), oldPass);
                 if (data == null) return error("Error loading employee data. Please report this to Cody.");
                 boolean correct = (boolean) data[0];
                 if (!correct) return error("Invalid current password. Please try again.");
-                String hash = BCrypt.hashPassword(newPass, user.getSalt());
+                hash = BCrypt.hashPassword(newPass, user.getSalt());
                 UserConnection.connection().handleRequest("change-pass", hash, user.getId());
                 UserConnection.connection().handleRequest("remove-all-sess", user.getUsername());
                 prop.put("success", true);

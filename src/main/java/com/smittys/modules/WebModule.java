@@ -35,6 +35,8 @@ public abstract class WebModule {
             boolean loggedIn = isLoggedIn(request);
             model.put("loggedIn", loggedIn);
             if (loggedIn) model.put("user", getUser(request));
+            User user = getUser(request);
+            if (user != null && user.getUsername().equalsIgnoreCase("cody")) model.put("isCody", true);
             return Jade4J.render(file, model);
         } catch (JadeCompilerException | IOException e) {
             e.printStackTrace();

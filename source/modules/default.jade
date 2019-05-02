@@ -60,6 +60,47 @@ html
                     });
                     return false;
                 });
+                
+                $('#create-user').click(() => {
+                    $.get('/utilities/create-user', {}, ret => {
+                        let data = getJSON(ret);
+                        if(data == null) return false;
+                        n = noty({
+                            text: 'Create User',
+                            type: 'confirm',
+                            layout: 'center',
+                            template: data.html,
+                            dismissQueue: false,
+                            theme: 'cryogen',
+                            buttons: [{
+                                addClass: 'btn btn-primary submit-btn', text: 'Create', onClick: ($noty) => {
+                                    let username = $('input[data-name="username"]').val();
+                                    let firstName = $('input[data-name="first-name"]').val();
+                                    let lastName = $('input[data-name="last-name"]').val();
+                                    let newPass = $('input[data-name="new-pass"]').val();
+                                    let newPassConfirm = $('input[data-name="new-pass-confirm"]').val();
+                                    if(newPass !== newPassConfirm) {
+                                        sendAlert('New passwords do not match.');
+                                        return false;
+                                    }
+                                    if(newPass.length < 6) {
+                                        sendAlert('New password must be at least 6 characters.');
+                                        return false;
+                                    }
+                                    $.post('/utilities/create-user', { username, password: newPass, firstName, lastName }, ret => {
+                                        let data = getJSON(ret);
+                                        if(data == null) return false;
+                                        sendAlert('New user has been created.');
+                                        closeNoty($noty);
+                                    });
+                                }
+                            },
+                            {
+                                addClass: 'btn btn-danger', text: 'Cancel', onClick: closeNoty
+                            }]
+                        });
+                    });
+                });
 
                 $('#change-pass').click(() => {
                     $.get('/utilities/change-pass', {}, ret => {
@@ -188,4 +229,7 @@ html
                                                 a.rebuild-errors(href='/', data-type=1) Rebuild Inventory Errors
                                         li
                                             a#change-pass(href='#') Change Password
+                                        if isCody
+                                            li
+                                                a#create-user(href='#') Create User
                                         
