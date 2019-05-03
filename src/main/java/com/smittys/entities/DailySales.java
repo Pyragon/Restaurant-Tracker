@@ -67,7 +67,6 @@ public class DailySales {
 
     public String getNote() {
         Object[] data = LabourConnection.connection().handleRequest("get-note", date);
-        System.out.println(date);
         if (data == null) return null;
         return ((Note) data[0]).getNote();
     }
