@@ -19,4 +19,4 @@ div.widget.error-widget.right
         -var suffix = numUtils.getDayOfMonthSuffix(biggestTruck.getShipDate())
         p.widget-information= 'Biggest truck: '+formatter.formatTimestamp(biggestTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(biggestTruck.getPrice())
     p.widget-information= 'Sysco orders this year: '+total_orders
-    p.widget-information= 'Total price: '+numUtils.formatNumber(total_orders_price)
+    p.widget-information= 'Total price this year: '+numUtils.formatNumber(total_orders_price)
