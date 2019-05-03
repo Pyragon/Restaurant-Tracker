@@ -5,6 +5,7 @@ import com.smittys.db.DBConnectionManager;
 import com.smittys.db.DatabaseConnection;
 import com.smittys.entities.Employee;
 import com.smittys.entities.HourData;
+import com.smittys.entities.Note;
 import com.smittys.entities.SQLQuery;
 import com.smittys.utils.Utilities;
 
@@ -119,7 +120,7 @@ public class LabourConnection extends DatabaseConnection {
                         queryResponse = GET_EMPLOYEES;
                         break;
                     // case "sales":
-                    // queryResponse = GET_SALES;
+                    // queryResponse = GET_NOTES;
                     // break;
                 }
                 return select(module, query, queryResponse, values);
@@ -140,6 +141,11 @@ public class LabourConnection extends DatabaseConnection {
                 return selectDistinct("sales", "date", "date DESC LIMIT " + offset + ",10", GET_SALES_DAYS);
             case "get-all-sales-days-count":
                 return new Object[]{Utilities.roundUp(selectDistinctCount("sales", "date"), 10)};
+            case "get-note":
+                return select("notes", "date=?", GET_NOTES, data[1]);
+            case "add-note":
+                insert("notes", ((Note) data[1]).data());
+                break;
             case "add-hours":
                 insert("hours", ((HourData) data[1]).data());
                 break;
@@ -172,6 +178,15 @@ public class LabourConnection extends DatabaseConnection {
         }
         return null;
     }
+
+    private final SQLQuery GET_NOTES = set -> {
+        if (empty(set)) return null;
+        int id = getInt(set, "id");
+        Timestamp date = getTimestamp(set, "date");
+        String note = getString(set, "note");
+        Timestamp added = getTimestamp(set, "added");
+        return new Object[]{new Note(id, date, note, added)};
+    };
 
     private SQLQuery GET_SALES_DAYS = (set) -> {
         ArrayList<Timestamp> stamps = new ArrayList<>();

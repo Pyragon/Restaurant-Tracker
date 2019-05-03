@@ -11,6 +11,8 @@ table.table.hs-table.table-condensed.table-responsive.hours-table.widget(style='
             th.t-center BOH Cost
             th.t-center Total Cost
             th.t-center Labour Cost
+            th.t-center Notes
+            
     tbody
         for sales in daily
             tr(data-id=sales.getDate())
@@ -23,4 +25,9 @@ table.table.hs-table.table-condensed.table-responsive.hours-table.widget(style='
                 td.b-right= numUtils.formatNumber(sales.getFOHCost())
                 td.b-right= numUtils.formatNumber(sales.getBOHCost())
                 td.b-right= numUtils.formatNumber(sales.getFOHCost() + sales.getBOHCost())
-                td= numUtils.formatNumber(sales.getLabourCost(), '')+'%'
+                td.b-right= numUtils.formatNumber(sales.getLabourCost(), '')+'%'
+                td
+                    if sales.getNote() == null
+                        i.fa.fa-plus.vis-link#add-note
+                    else
+                        span= sales.getNote()

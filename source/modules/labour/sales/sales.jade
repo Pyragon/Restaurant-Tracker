@@ -6,6 +6,44 @@ script.
             c.setup();
         })
     })();
+    
+    $(document).on('click', '#add-note', addNote);
+    
+    function addNote() {
+        let date = $(this).closest('tr').data('id');
+        $.get('/labour/sales/add-note', {}, ret => {
+            let data = getJSON(ret);
+            if(data == null) return false;
+            n = noty({
+                text: 'Add Note',
+                type: 'confirm',
+                layout: 'center',
+                template: data.html,
+                dismissQueue: false,
+                theme: 'cryogen',
+                buttons: [{
+                    addClass: 'btn btn-primary submit-btn', text: 'Add', onClick: ($noty) => {
+                        let note = $('input[data-name="note"]').val();
+                        if(note.length > 50) {
+                            sendAlert('Note cannot exceed 50 characters.');
+                            return false;
+                        }
+                        $.post('/labour/sales/add-note', { date, note }, ret => {
+                            let data = getJSON(ret);
+                            if(data == null) return false;
+                            sendAlert('Note has been successfully added.');
+                            closeNoty($noty);
+                            c.loadList();
+                        });
+                    }
+                },
+                {
+                    addClass: 'btn btn-danger', text: 'Cancel', onClick: closeNoty
+                }]
+            });
+        });
+    }
+    
 h5 Sales
 p.small.info The following is all the day's sales with information for labour hours
 p.small.info Use the buttons on the right to search between days

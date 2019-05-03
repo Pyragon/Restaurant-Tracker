@@ -3,6 +3,7 @@ package com.smittys.modules.labour;
 import com.smittys.Tracker;
 import com.smittys.db.impl.LabourConnection;
 import com.smittys.entities.DailySales;
+import com.smittys.entities.Note;
 import com.smittys.entities.WebSection;
 import com.smittys.modules.WebModule;
 import spark.Request;
@@ -11,6 +12,7 @@ import spark.Response;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -64,6 +66,32 @@ public class SalesSection implements WebSection {
                 prop.put("success", true);
                 prop.put("html", WebModule.render("./source/modules/labour/sales/sales_list.jade", model, request, response));
                 prop.put("pageTotal", data[0]);
+                break;
+            case "add-note":
+                if (request.requestMethod().equals("GET")) {
+                    prop.put("success", true);
+                    prop.put("html", WebModule.render("./source/modules/labour/sales/add_note.jade", model, request, response));
+                    break;
+                }
+                String dateString = request.queryParams("date");
+                String note = request.queryParams("note");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                Date date;
+                try {
+                    date = format.parse(dateString);
+                } catch (Exception e) {
+                    prop.put("success", false);
+                    prop.put("error", "Error parsing date for note.");
+                    break;
+                }
+                if (note.length() > 50) {
+                    prop.put("success", false);
+                    prop.put("error", "Note cannot exceed 50 characters.");
+                    break;
+                }
+                Timestamp stamp = new Timestamp(date.getTime());
+                LabourConnection.connection().handleRequest("add-note", new Note(-1, stamp, note, null));
+                prop.put("success", true);
                 break;
             default:
                 prop.put("success", false);

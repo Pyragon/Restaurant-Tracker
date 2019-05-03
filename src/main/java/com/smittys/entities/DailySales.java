@@ -65,6 +65,13 @@ public class DailySales {
         fohHours = hours.stream().filter(h -> ArrayUtils.contains(RoleNames.FOH, h.getRoleId())).mapToDouble(HourData::getLength).sum();
     }
 
+    public String getNote() {
+        Object[] data = LabourConnection.connection().handleRequest("get-note", date);
+        System.out.println(date);
+        if (data == null) return null;
+        return ((Note) data[0]).getNote();
+    }
+
     public int getItemsSold() {
         return salesItems.stream().mapToInt(s -> s.getQuantity()).sum();
     }
