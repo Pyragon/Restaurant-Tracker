@@ -5,16 +5,21 @@ General:
     ☐ Ensure all dates use MM/dd/yyyy
     ☐ Display as integers instead of doubles on whole numbers (1 vs 1.0)
 
+DB:
+    ☐ Remake DB to simply take a class instead of SQLQuery
+    ☐ Will go through each final field in class, get associated data
+    ☐ If name is not camelCase -> camel_case then have annotation for name 
+
 Misc:
     ☐ Add message to login users on first login to change from default password
 
 Labour:
     Hours:
-        ☐ Ensure hours are all be counted correctly
+        ✔ Ensure hours are all be counted correctly @done(19-04-25 10:35)
         ☐ Remake styling for 'default date' on hours page
         ☐ Create modal to add multiple hours in one go (for day)
         ✔ Create error if previous days hours not added by 11am next day @done(19-03-03 22:43)
-        ☐ ^^ Use above multiple hours modal
+        ✘ ^^ Use above multiple hours modal @cancelled(19-04-25 10:35)
         ✘ Filter by each, day, month @cancelled(19-03-03 22:46)
         ✔ Create filter for hours worked using <, >, <=, >= @done(19-03-05 16:43)
     Sales:
@@ -34,6 +39,7 @@ Labour:
         ☐ Get all employees proper wages
         ☐ Ensure all search filters work
         ☐ Figure out multiple hires of same person
+        ☐ Adding hours from employees section should update hours section
     Tips:
         ☐ Allow adding of tipouts from servers
         ☐ Error to be added when you add a server's hours
