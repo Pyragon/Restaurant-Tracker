@@ -23,6 +23,7 @@ public class LabourModule extends WebModule {
         sections.put("employees", new EmployeesSection());
         sections.put("sales", new SalesSection());
         sections.put("tips", new TipsSection());
+        sections.put("schedules", new ScheduleSection());
     }
 
     @Override

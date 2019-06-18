@@ -1,0 +1,59 @@
+script.
+    let c;
+    (function() {
+        import('/js/module-helper.js').then(mod => {
+            c = new mod.ModuleHelper('schedules', '/labour/schedules');
+            c.setup();
+        })
+    })();
+    
+    $(document).on('click', '#add-schedule', addSchedule);
+    
+    function addSchedule() {
+        let date = $(this).closest('tr').data('id');
+        $.get('/labour/schedules/add-schedule', {}, ret => {
+            let data = getJSON(ret);
+            if(data == null) return false;
+            n = noty({
+                text: 'Add Schedule',
+                type: 'confirm',
+                layout: 'center',
+                template: data.html,
+                dismissQueue: false,
+                theme: 'cryogen',
+                buttons: [{
+                    addClass: 'btn btn-primary submit-btn', text: 'Add', onClick: ($noty) => {
+                        
+                    }
+                },
+                {
+                    addClass: 'btn btn-danger', text: 'Cancel', onClick: closeNoty
+                }]
+            });
+        });
+    }
+    
+h5 Schedules
+p.small.info The following is a list of schedules for Smitty's
+p.small.info Use the buttons on the right to search and filter between schedules
+div.row
+    div.iactions
+        div
+            div(style='float: left; margin: 10px 10px')
+                div.col-xs-4
+                    p.color-grey.search-info Click the search icon to begin searching through schedules. Search using filters with filter:value and separate with commas. True/false or yes/no can be used.
+                div.col-xs-4
+                    p.color-grey.search-info Filters: 
+                div.col-xs-4
+                    p.color-grey.search-info Example: 
+div.row(style='padding: 15px;')
+    div#search(style='clear: both; float: right; margin-bottom: 15px; text-align: left;')
+        div
+            span.fa.fa-search.link#search-icon(style='display: inline; float: right; padding-left: 5px; margin-top: 7px;')
+            div#search-pin(style='float: right; display: none;', display='none')
+                input.form-control(type='text', placeholder='Search', style='max-width: 150px; max-height: 30px; background: #111; border: #000; display: inline!important;')
+    div.search-filters(style='clear: both; float: right;')
+    div.col-md-12(style='border: 1px solid #000; clear: both; margin-bottom: 10px;')
+    div#main
+    div.pages
+        div#pages
