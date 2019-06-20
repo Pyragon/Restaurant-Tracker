@@ -135,6 +135,7 @@ public abstract class DatabaseConnection {
                 else if (obj instanceof Timestamp) stmt.setTimestamp(index, (Timestamp) obj);
                 else if (obj instanceof Time) stmt.setTime(index, (Time) obj);
                 else if(obj instanceof Boolean) stmt.setBoolean(index, (Boolean) obj);
+                else if(obj instanceof Date) stmt.setDate(index, (Date) obj);
             }
         } catch (SQLException e) {
             e.printStackTrace();

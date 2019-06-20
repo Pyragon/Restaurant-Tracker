@@ -56,11 +56,13 @@ public class SalesSection implements WebSection {
                 }
                 ArrayList<Timestamp> stamps = (ArrayList<Timestamp>) data[0];
                 ArrayList<DailySales> dailySales = new ArrayList<>(stamps.size());
-                stamps.forEach(t -> {
+                for(Timestamp t : stamps) {
                     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
                     Object salesData = Tracker.getInstance().getCachingManager().get("daily-sales-cache").getCachedData(format.format(t));
+                    if(salesData == null)
+                        return WebModule.error("Unable to load sales date: "+format.format(t));
                     dailySales.add((DailySales) salesData);
-                });
+                }
                 data = LabourConnection.connection().handleRequest("get-all-sales-days-count");
                 model.put("daily", dailySales);
                 prop.put("success", true);

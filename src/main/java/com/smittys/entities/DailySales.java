@@ -11,13 +11,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.List;
 
 @Data
 @RequiredArgsConstructor
 public class DailySales {
 
-    private final Timestamp date;
+    private final Date date;
     private final List<SalesItem> salesItems;
 
     private double labourCost;

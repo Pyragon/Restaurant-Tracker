@@ -8,6 +8,7 @@ import com.smittys.entities.HourData;
 import com.smittys.entities.SalesItem;
 
 import java.sql.Timestamp;
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,7 +36,7 @@ public class LabourCostCache extends CachedItem {
         SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyyy");
         switch (opcode) {
             case "get-labour-cost-for-day":
-                Timestamp date = (Timestamp) data[1];
+                Date date = (Date) data[1];
                 String formatted = format.format(date);
                 value = labourCosts.containsKey(formatted) ? labourCosts.get(formatted) : 0.0;
                 break;
@@ -43,7 +44,7 @@ public class LabourCostCache extends CachedItem {
             case "get-average-labour-cost-for-year":
                 boolean year = opcode.contains("year");
                 OptionalDouble op = labourCosts.keySet().stream().filter(c -> {
-                    cal.setTime(new Date());
+                    cal.setTime(new Date(System.currentTimeMillis()));
                     int month = cal.get(year ? Calendar.YEAR : Calendar.MONTH);
                     try {
                         cal.setTime(format.parse(c));
@@ -62,7 +63,7 @@ public class LabourCostCache extends CachedItem {
                 year = opcode.contains("year");
                 boolean highest = opcode.contains("highest");
                 Optional<String> opS = labourCosts.keySet().stream().filter(c -> {
-                    cal.setTime(new Date());
+                    cal.setTime(new Date(System.currentTimeMillis()));
                     int month = cal.get(year ? Calendar.YEAR : Calendar.MONTH);
                     try {
                         cal.setTime(format.parse(c));
@@ -140,7 +141,7 @@ public class LabourCostCache extends CachedItem {
         String opcode = (String) data[0];
         boolean expired = true;
         if (opcode.equals("get-labour-cost-for-day")) {
-            Timestamp stamp = (Timestamp) data[1];
+            Date stamp = (Date) data[1];
             SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyyy");
             String date = format.format(stamp);
             expired = hasExpired(date);

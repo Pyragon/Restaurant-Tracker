@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.HashMap;
 
 public class DailySalesCache extends CachedItem {
@@ -31,18 +32,24 @@ public class DailySalesCache extends CachedItem {
     public void fetchNewData(Object... data) {
         String opcode = (String) data[0];
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-        Timestamp stamp;
+        Date date;
         try {
-            stamp = new Timestamp(format.parse(opcode).getTime());
+            date = new Date(format.parse(opcode).getTime());
         } catch (ParseException e) {
             e.printStackTrace();
             return;
         }
-        Object[] salesData = InventoryConnection.connection().handleRequest("get-sales-items-by-date", stamp);
-        if (salesData == null) return;
+        Object[] salesData = InventoryConnection.connection().handleRequest("get-sales-items-by-date", date);
+        if (salesData == null) {
+            System.out.println("Error loading sales for: "+opcode);
+            return;
+        }
         ArrayList<SalesItem> items = (ArrayList<SalesItem>) salesData[0];
-        if (items.size() == 0) return;
-        DailySales dailySales = new DailySales(stamp, items);
+        if (items.size() == 0) {
+            System.out.println("No sales items for: "+opcode);
+            return;
+        }
+        DailySales dailySales = new DailySales(date, items);
         dailySales.loadLabourCost();
         values.put(opcode, dailySales);
         lastChecked.put(opcode, System.currentTimeMillis());

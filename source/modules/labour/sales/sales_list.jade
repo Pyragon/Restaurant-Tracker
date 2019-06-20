@@ -16,7 +16,7 @@ table.table.hs-table.table-condensed.table-responsive.hours-table.widget(style='
     tbody
         for sales in daily
             tr(data-id=sales.getDate())
-                td.b-right= formatter.formatTimestamp(sales.getDate(), "EEE, MMM dd, yyyy")
+                td.b-right= formatter.formatDate(sales.getDate(), "EEE, MMM dd, yyyy")
                 td.b-right= sales.getItemsSold()
                 td.b-right= numUtils.formatNumber(sales.getTotalPrice())
                 td.b-right= numUtils.formatNumber(sales.getFOHHours(), '')
