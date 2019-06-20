@@ -1,10 +1,16 @@
 package com.smittys.db;
 
+import com.google.common.base.CaseFormat;
 import com.smittys.Tracker;
+import com.smittys.entities.MySQLRead;
 import com.smittys.entities.SQLQuery;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -128,6 +134,7 @@ public abstract class DatabaseConnection {
                 else if (obj instanceof Long) stmt.setLong(index, (long) obj);
                 else if (obj instanceof Timestamp) stmt.setTimestamp(index, (Timestamp) obj);
                 else if (obj instanceof Time) stmt.setTime(index, (Time) obj);
+                else if(obj instanceof Boolean) stmt.setBoolean(index, (Boolean) obj);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -136,6 +143,10 @@ public abstract class DatabaseConnection {
 
     public void setParams(PreparedStatement stmt, Object[] params) {
         setParams(stmt, params, false);
+    }
+
+    public Object[] select(String table, SQLQuery query) {
+        return select(table, null, null, query, null);
     }
 
     public Object[] select(String database, String condition, String orderClause, SQLQuery query, Object... values) {
@@ -159,6 +170,110 @@ public abstract class DatabaseConnection {
             builder.append("SELECT DISTINCT " + field + " FROM " + database);
             if (order != null) builder.append(" ORDER BY " + order);
             return getResults(builder.toString(), query, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public <T> ArrayList<T> selectList(String table, String condition, Class<T> c, Object... values) {
+        return selectList(table, condition, null, c, values);
+    }
+
+    public <T> ArrayList<T> selectList(String table, Class<T> c, Object... values) {
+        return selectList(table, null, null, c, values);
+    }
+
+    public <T> ArrayList<T> selectList(String table, String condition, String order, Class<T> c, Object... values) {
+        try {
+            if(connection.isClosed() || !connection.isValid(5)) connect();
+            StringBuilder builder = new StringBuilder();
+            builder.append("SELECT * FROM " + table);
+            if (condition != null && !condition.equals("")) builder.append(" WHERE ").append(condition);
+            if (order != null && !order.equals("")) builder.append(" " + order);
+            PreparedStatement stmt = connection.prepareStatement(builder.toString());
+            setParams(stmt, values);
+            ResultSet set = stmt.executeQuery();
+            ArrayList<T> list = new ArrayList<>();
+            if(wasNull(set)) return list;
+            while(next(set))
+                list.add(loadClass(set, c));
+            return list;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public <T> T selectClass(String table, String condition, Class<T> c, Object... values) {
+        return selectClass(table, condition, null, c, values);
+    }
+
+    public <T> T selectClass(String table, Class<T> c, Object... values) {
+        return selectClass(table, null, null, c, values);
+    }
+
+    public <T> T selectClass(String table, String condition, String order, Class<T> c, Object... values) {
+        try {
+            if(connection.isClosed() || !connection.isValid(5)) connect();
+            StringBuilder builder = new StringBuilder();
+            builder.append("SELECT * FROM " + table);
+            if (condition != null && !condition.equals("")) builder.append(" WHERE ").append(condition);
+            if (order != null && !order.equals("")) builder.append(" " + order);
+            PreparedStatement stmt = connection.prepareStatement(builder.toString());
+            setParams(stmt, values);
+            ResultSet set = stmt.executeQuery();
+            if(empty(set)) return null;
+            return loadClass(set, c);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public <T> T loadClass(ResultSet set, Class<T> c) {
+        try {
+            List<Class<?>> types = new ArrayList<>();
+            List<Object> cValues = new ArrayList<>();
+            for (Field field : c.getDeclaredFields()) {
+                if (!Modifier.isFinal(field.getModifiers())) continue;
+                types.add(field.getType());
+                String name = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
+                if (field.isAnnotationPresent(MySQLRead.class))
+                    name = field.getAnnotation(MySQLRead.class).value();
+                switch (field.getType().getSimpleName().toLowerCase()) {
+                    case "int":
+                        cValues.add(getInt(set, name));
+                        break;
+                    case "string":
+                        cValues.add(getString(set, name));
+                        break;
+                    case "boolean":
+                        cValues.add(getBoolean(set, name));
+                        break;
+                    case "timestamp":
+                        cValues.add(getTimestamp(set, name));
+                        break;
+                    case "time":
+                        cValues.add(getTime(set, name));
+                        break;
+                    case "double":
+                        cValues.add(getDouble(set, name));
+                        break;
+                    case "long":
+                        cValues.add(getLongInt(set, name));
+                        break;
+                    case "date":
+                        cValues.add(getDate(set, name));
+                        break;
+                    default:
+                        System.out.println("Missing type: " + field.getType().getName().toLowerCase());
+                        break;
+                }
+            }
+            Constructor<T> constructor = c.getConstructor(types.toArray(new Class<?>[types.size()]));
+            T obj = constructor.newInstance(cValues.toArray());
+            return obj;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -276,7 +391,7 @@ public abstract class DatabaseConnection {
             String query = "INSERT INTO `" + database + "` VALUES(" + insert.toString() + ")";
             PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             setParams(stmt, objects);
-//            System.out.println(stmt);
+            System.out.println(stmt);
             stmt.execute();
             ResultSet set = stmt.getGeneratedKeys();
             if (set.next()) return set.getInt(1);
@@ -418,6 +533,15 @@ public abstract class DatabaseConnection {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public boolean getBoolean(ResultSet set, String string) {
+        try {
+            return set.getBoolean(string);
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public int getInt(ResultSet set, String string) {
