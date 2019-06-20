@@ -1,0 +1,31 @@
+table.table.hs-table.table-condensed.table-responsive.hours-table.widget(style='font-size: 12px;')
+    thead
+        tr
+            th.t-center ID
+            th.t-center Week Start
+            th.t-center BOH/FOH
+            th.t-center Hours
+            th.t-center Added
+            th.t-center Updated
+            th.t-center Print
+            th.t-center Print Buzz Sheets
+            th.t-center View
+            
+    tbody
+        for schedule in schedules
+            tr(data-id=schedule.getId())
+                td.b-right= schedule.getId()
+                td.b-right= formatter.formatTimestamp(schedule.getStartDate(), "EEE, MMM dd, yyyy")
+                td.b-right= schedule.isBoh() ? 'BOH' : 'FOH'
+                td.b-right= schedule.getHours()
+                td.b-right= formatter.formatTimestamp(schedule.getAdded(), "EEE, MMM dd, yyyy")
+                td.b-right= formatter.formatTimestamp(schedule.getUpdated(), "EEE, MMM dd, yyyy")
+                td.b-right
+                    i.fa.fa-print.vis-link#print-schedule
+                if schedule.isBoh()
+                    td.b-right
+                        i.fa.fa-print.vis-link#print-buzz-sheet
+                else
+                    td.b-right N/A
+                td
+                    i.fa.fa-clipboard.vis-link#view-schedule

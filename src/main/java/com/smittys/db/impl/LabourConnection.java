@@ -3,15 +3,14 @@ package com.smittys.db.impl;
 import com.smittys.Tracker;
 import com.smittys.db.DBConnectionManager;
 import com.smittys.db.DatabaseConnection;
-import com.smittys.entities.Employee;
-import com.smittys.entities.HourData;
-import com.smittys.entities.Note;
-import com.smittys.entities.SQLQuery;
+import com.smittys.entities.*;
 import com.smittys.utils.Utilities;
 
 import java.sql.ResultSet;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -28,14 +27,8 @@ public class LabourConnection extends DatabaseConnection {
     public static void main(String[] args) {
         Tracker tracker = new Tracker();
         tracker.startConnections();
-        ResultSet set = connection().callProcedure("TESTPROC");
-        try {
-            while (set.next()) {
-                System.out.println(connection().getString(set, "id"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ArrayList<Employee> employees = connection().selectList("employees", Employee.class);
+        System.out.println(employees.size());
     }
 
     @Override
@@ -146,8 +139,27 @@ public class LabourConnection extends DatabaseConnection {
             case "add-note":
                 insert("notes", ((Note) data[1]).data());
                 break;
+            case "get-schedule-by-id":
+                return select("schedules", "id=?", GET_SCHEDULE, data[1]);
+            case "get-schedules":
+                page = (int) data[1];
+                if(page <= 0) page = 1;
+                offset = (page-1) * 10;
+                return select("schedules", null, "ORDER BY start_date DESC LIMIT "+offset+",10", GET_SCHEDULES);
+            case "add-schedule":
+                insert("schedules", ((Schedule) data[1]).data());
+                break;
+            case "get-schedules-count":
+                return new Object[] { Utilities.roundUp(selectCount("schedules", null), 10) };
             case "add-hours":
                 insert("hours", ((HourData) data[1]).data());
+                break;
+            case "get-schedule-times":
+                return select("schedule_times", "schedule_id=?", GET_TIMES, data[1]);
+            case "get-schedule-time-by-id":
+                return select("schedule_times", "id=?", GET_TIME, data[1]);
+            case "add-schedule-time":
+                insert("schedule_times", ((ScheduleTime) data[1]).data());
                 break;
             case "delete-hours":
                 delete("hours", "id=?", data[1]);
@@ -241,6 +253,54 @@ public class LabourConnection extends DatabaseConnection {
             hours.add(getHourData(set));
         return new Object[]{hours};
     };
+
+    private SQLQuery GET_SCHEDULE = (set) -> {
+        if (empty(set))
+            return null;
+        return new Object[]{getSchedule(set)};
+    };
+
+    private SQLQuery GET_SCHEDULES = (set) -> {
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        if(wasNull(set)) return new Object[] { schedules };
+        while(next(set))
+            schedules.add(getSchedule(set));
+        return new Object[] { schedules };
+    };
+
+    private SQLQuery GET_TIMES = set -> {
+        ArrayList<ScheduleTime> times = new ArrayList<>();
+        if(wasNull(set)) return new Object[] { times };
+        while(next(set))
+            times.add(getScheduleTime(set));
+        return new Object[] { times };
+    };
+
+    private SQLQuery GET_TIME = set -> {
+        if(empty(set)) return null;
+        return new Object[] { getScheduleTime(set) };
+    };
+
+    private ScheduleTime getScheduleTime(ResultSet set) {
+        int id = getInt(set, "id");
+        int scheduleId = getInt(set, "schedule_id");
+        int employeeId = getInt(set, "employee_id");
+        int day = getInt(set, "day");
+        Timestamp startTime = getTimestamp(set, "start_time");
+        Timestamp endTime = getTimestamp(set, "end_time");
+        Timestamp added = getTimestamp(set, "added");
+        Timestamp updated = getTimestamp(set, "updated");
+        return new ScheduleTime(id, scheduleId, employeeId, day, startTime, endTime, added, updated);
+    }
+
+    private Schedule getSchedule(ResultSet set) {
+        int id = getInt(set, "id");
+        boolean isBOH = getBoolean(set, "is_boh");
+        Timestamp startDate = getTimestamp(set, "start_date");
+        Timestamp added = getTimestamp(set, "added");
+        Timestamp updated = getTimestamp(set, "updated");
+        return new Schedule(id, isBOH, startDate, added, updated);
+    }
 
     private HourData getHourData(ResultSet set) {
         int id = getInt(set, "id");

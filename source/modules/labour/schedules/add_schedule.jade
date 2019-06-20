@@ -1,0 +1,99 @@
+script.
+    $(document).ready(() => {
+
+        $('.add-time-line').click(function() {
+            let day = $(this).data('day');
+            var div = $('<div class="schedule-times"></div>');
+            var first = $('<input class="col-xs-4", data-key="name", type="text", placeholder="Name"></input>');
+            var second = $('<input class="col-xs-4", data-key="start", type="text", placeholder="Start"></input>');
+            var third = $('<input class="col-xs-4", data-key="end", type="text", placeholder="End"></input>');
+            div.append(first);
+            div.append(second);
+            div.append(third);
+            $(`.times[data-day='${day}']`).find('.row').append(div);
+            $('.scrollable-modal').scrollTop($(this).offset().top);
+        });
+
+    });
+.noty_message
+    span.noty_text
+    .widget.register.scrollable-modal(style='margin-top: 5px; min-height: 80%;')
+        .report_line
+            label.name Week Start
+            input#week-start(type='text', placeholder='MM/dd/yyyy', style='max-width: 120px;')
+        #clear
+        .report_line
+            label.name Is BOH?
+            input#boh(type='checkbox', checked)
+        #clear
+        h3 Sunday
+        .times(data-day='0')
+            .container(style='max-width: 300px;')
+                .row
+                    .schedule-times
+                        input.col-xs-4(data-key='name', type='text', placeholder='Name')
+                        input.col-xs-4(data-key='start', type='text', placeholder='Start')
+                        input.col-xs-4(data-key='end', type='text', placeholder='End')
+        #clear
+        i.fa.fa-plus-circle.add-time-line(data-day='0', style='margin: auto auto 10px auto; cursor: pointer;')
+        h3 Monday
+        .times(data-day='1')
+            .container(style='max-width: 300px;')
+                .row
+                    .schedule-times
+                        input.col-xs-4(data-key='name', type='text', placeholder='Name')
+                        input.col-xs-4(data-key='start', type='text', placeholder='Start')
+                        input.col-xs-4(data-key='end', type='text', placeholder='End')
+        #clear
+        i.fa.fa-plus-circle.add-time-line(data-day='1', style='margin: auto auto 10px auto; cursor: pointer;')
+        h3 Tuesday
+        .times(data-day='2')
+            .container(style='max-width: 300px;')
+                .row
+                    .schedule-times
+                        input.col-xs-4(data-key='name', type='text', placeholder='Name')
+                        input.col-xs-4(data-key='start', type='text', placeholder='Start')
+                        input.col-xs-4(data-key='end', type='text', placeholder='End')
+        #clear
+        i.fa.fa-plus-circle.add-time-line(data-day='2', style='margin: auto auto 10px auto; cursor: pointer;')
+        h3 Wednesday
+        .times(data-day='3')
+            .container(style='max-width: 300px;')
+                .row
+                    .schedule-times
+                        input.col-xs-4(data-key='name', type='text', placeholder='Name')
+                        input.col-xs-4(data-key='start', type='text', placeholder='Start')
+                        input.col-xs-4(data-key='end', type='text', placeholder='End')
+        #clear
+        i.fa.fa-plus-circle.add-time-line(data-day='3', style='margin: auto auto 10px auto; cursor: pointer;')
+        h3 Thursday
+        .times(data-day='4')
+            .container(style='max-width: 300px;')
+                .row
+                    .schedule-times
+                        input.col-xs-4(data-key='name', type='text', placeholder='Name')
+                        input.col-xs-4(data-key='start', type='text', placeholder='Start')
+                        input.col-xs-4(data-key='end', type='text', placeholder='End')
+        #clear
+        i.fa.fa-plus-circle.add-time-line(data-day='4', style='margin: auto auto 10px auto; cursor: pointer;')
+        h3 Friday
+        .times(data-day='5')
+            .container(style='max-width: 300px;')
+                .row
+                    .schedule-times
+                        input.col-xs-4(data-key='name', type='text', placeholder='Name')
+                        input.col-xs-4(data-key='start', type='text', placeholder='Start')
+                        input.col-xs-4(data-key='end', type='text', placeholder='End')
+        #clear
+        i.fa.fa-plus-circle.add-time-line(data-day='5', style='margin: auto auto 10px auto; cursor: pointer;')
+        h3 Saturday
+        .times(data-day='6')
+            .container(style='max-width: 300px;')
+                .row
+                    .schedule-times
+                        input.col-xs-4(data-key='name', type='text', placeholder='Name')
+                        input.col-xs-4(data-key='start', type='text', placeholder='Start')
+                        input.col-xs-4(data-key='end', type='text', placeholder='End')
+        #clear
+        i.fa.fa-plus-circle.add-time-line(data-day='6', style='margin: auto auto 10px auto; cursor: pointer;')
+.noty_close
