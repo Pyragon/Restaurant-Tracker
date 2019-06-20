@@ -23,7 +23,35 @@ script.
                 theme: 'cryogen',
                 buttons: [{
                     addClass: 'btn btn-primary submit-btn', text: 'Add', onClick: ($noty) => {
-                        
+                        let weekStart = $('#week-start').val();
+                        if(!weekStart) {
+                            sendAlert('A week start must be defined!');
+                            return false;
+                        }
+                        let isBoh = $('#boh').prop('checked');
+                        let times = [];
+                        $('.times').each(function(index) {
+                            let day = $(this).data('day');
+                            $(this).find('.schedule-times').each(function(index) {
+                                let name = $(this).find('input[data-key="name"]').val();
+                                let start = $(this).find('input[data-key="start"]').val();
+                                let end = $(this).find('input[data-key="end"]').val();
+                                if(!name || !start) return false;
+                                if(!times[day]) times[day] = [];
+                                times[day].push({ name, start, end});
+                            });
+                        });
+                        if(times.length == 0) {
+                            sendAlert('At least 1 time must be included!');
+                            return false;
+                        }
+                        $.post('/labour/schedules/add-schedule', { weekStart, isBoh, times: JSON.stringify(times) }, ret => {
+                           let data = getJSON(ret);
+                           if(data == null) return false;
+                           closeNoty($noty);
+                           sendAlert('Successfully added schedule.');
+                           c.loadList(); 
+                        });
                     }
                 },
                 {
@@ -46,6 +74,10 @@ div.row
                     p.color-grey.search-info Filters: 
                 div.col-xs-4
                     p.color-grey.search-info Example: 
+            div(style='float: right; margin: 33.5px 5px;')
+                div.link#add-schedule
+                    i.fa.fa-plus-square
+                    span  Add Schedule
 div.row(style='padding: 15px;')
     div#search(style='clear: both; float: right; margin-bottom: 15px; text-align: left;')
         div

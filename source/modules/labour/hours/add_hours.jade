@@ -39,7 +39,7 @@ div.noty_message
         div.report_line
             label.name Paid as Role
             div.smit-options
-                select
+                select(style='max-width: 130px;')
                     -var i = 0
                     for id in roles.getNames().keySet()
                         if (hours != null && id == hours.getRoleId()) || (employee != null && id == employee.getDefaultRole()) || id == 0  

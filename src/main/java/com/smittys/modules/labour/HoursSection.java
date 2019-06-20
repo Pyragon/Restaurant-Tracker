@@ -271,7 +271,7 @@ public class HoursSection implements WebSection {
         return Tracker.getGson().toJson(prop);
     }
 
-    public Timestamp formatTime(Date date, String stamp) {
+    public static Timestamp formatTime(Date date, String stamp) {
         try {
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
