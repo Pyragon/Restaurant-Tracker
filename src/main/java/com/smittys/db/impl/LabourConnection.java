@@ -6,6 +6,7 @@ import com.smittys.db.DatabaseConnection;
 import com.smittys.entities.*;
 import com.smittys.utils.Utilities;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -154,8 +155,12 @@ public class LabourConnection extends DatabaseConnection {
             case "add-hours":
                 insert("hours", ((HourData) data[1]).data());
                 break;
+            case "get-schedule-by-start-date":
+                return select("schedules", "start_date=? AND is_boh=?", GET_SCHEDULE, data[1], data[2]);
             case "get-schedule-times":
                 return select("schedule_times", "schedule_id=?", GET_TIMES, data[1]);
+            case "get-schedule-times-by-id-and-day":
+                return select("schedule_times", "schedule_id=? AND day=?", GET_TIMES, data[1], data[2]);
             case "get-schedule-time-by-id":
                 return select("schedule_times", "id=?", GET_TIME, data[1]);
             case "add-schedule-time":
@@ -288,15 +293,16 @@ public class LabourConnection extends DatabaseConnection {
         int day = getInt(set, "day");
         Timestamp startTime = getTimestamp(set, "start_time");
         Timestamp endTime = getTimestamp(set, "end_time");
+        boolean close = getBoolean(set, "close");
         Timestamp added = getTimestamp(set, "added");
         Timestamp updated = getTimestamp(set, "updated");
-        return new ScheduleTime(id, scheduleId, employeeId, day, startTime, endTime, added, updated);
+        return new ScheduleTime(id, scheduleId, employeeId, day, startTime, endTime, close, added, updated);
     }
 
     private Schedule getSchedule(ResultSet set) {
         int id = getInt(set, "id");
         boolean isBOH = getBoolean(set, "is_boh");
-        Timestamp startDate = getTimestamp(set, "start_date");
+        Date startDate = getDate(set, "start_date");
         Timestamp added = getTimestamp(set, "added");
         Timestamp updated = getTimestamp(set, "updated");
         return new Schedule(id, isBOH, startDate, added, updated);

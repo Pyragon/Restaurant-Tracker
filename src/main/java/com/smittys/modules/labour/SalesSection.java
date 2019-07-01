@@ -69,6 +69,13 @@ public class SalesSection implements WebSection {
                 prop.put("html", WebModule.render("./source/modules/labour/sales/sales_list.jade", model, request, response));
                 prop.put("pageTotal", data[0]);
                 break;
+            case "add-sales":
+                if(request.requestMethod().equals("GET")) {
+                    prop.put("success", true);
+                    prop.put("html", WebModule.render("./source/modules/labour/sales/add_sales.jade", model, request, response));
+                    break;
+                }
+                break;
             case "add-note":
                 if (request.requestMethod().equals("GET")) {
                     prop.put("success", true);
