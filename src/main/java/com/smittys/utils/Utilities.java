@@ -3,7 +3,10 @@ package com.smittys.utils;
 import com.mysql.jdbc.StringUtils;
 import com.smittys.Tracker;
 import com.smittys.db.impl.InventoryConnection;
+import com.smittys.db.impl.LabourConnection;
 import com.smittys.db.impl.UserConnection;
+import com.smittys.entities.Schedule;
+import com.smittys.entities.ScheduleTime;
 import com.smittys.entities.User;
 import com.smittys.managers.EmailManager;
 import com.smittys.modules.WebModule;
@@ -12,6 +15,7 @@ import spark.Response;
 import spark.Route;
 import spark.Spark;
 
+import java.sql.Date;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -108,6 +112,15 @@ public class Utilities {
         Tracker tracker = new Tracker();
         tracker.startConnections();
         InventoryConnection.connection().handleRequest("fix-pack-units");
+    }
+
+    public static ArrayList<ScheduleTime> getTimes(Date date, int day, boolean boh) {
+        Object[] data = LabourConnection.connection().handleRequest("get-schedule-by-start-date", date, boh ? 1 : 0);
+        if(data == null) return new ArrayList<>();
+        Schedule schedule = (Schedule) data[0];
+        data = LabourConnection.connection().handleRequest("get-schedule-times-by-id-and-day", schedule.getId(), day);
+        if(data == null) return new ArrayList<>();
+        return (ArrayList<ScheduleTime>) data[0];
     }
 
     public static boolean isNullOrEmpty(String... strings) {

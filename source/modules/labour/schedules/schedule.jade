@@ -7,22 +7,27 @@ script.
         })
     })();
     
-    $(document).on('click', '#add-schedule', addSchedule);
+    $(document).on('click', '#add-schedule', () => addEditSchedule());
+    $(document).on('click', '#edit-schedule', function() {
+        let id = $(this).closest('tr').data('id');
+        addEditSchedule(id);
+    });
     
-    function addSchedule() {
-        let date = $(this).closest('tr').data('id');
-        $.get('/labour/schedules/add-schedule', {}, ret => {
-            let data = getJSON(ret);
+    function addEditSchedule(id) {
+        let data = id ? { id } : {};
+        $.get('/labour/schedules/add-edit-schedule', data, ret => {
+            data = getJSON(ret);
             if(data == null) return false;
+            let text = (id ? 'Edit' : 'Add')+' Schedule';
             n = noty({
-                text: 'Add Schedule',
+                text,
                 type: 'confirm',
                 layout: 'center',
                 template: data.html,
                 dismissQueue: false,
                 theme: 'cryogen',
                 buttons: [{
-                    addClass: 'btn btn-primary submit-btn', text: 'Add', onClick: ($noty) => {
+                    addClass: 'btn btn-primary submit-btn', text: id ? 'Edit' : 'Add', onClick: ($noty) => {
                         let weekStart = $('#week-start').val();
                         if(!weekStart) {
                             sendAlert('A week start must be defined!');
@@ -45,11 +50,15 @@ script.
                             sendAlert('At least 1 time must be included!');
                             return false;
                         }
-                        $.post('/labour/schedules/add-schedule', { weekStart, isBoh, times: JSON.stringify(times) }, ret => {
+                        let data = id ? { id } : {};
+                        data.weekStart = weekStart;
+                        data.isBoh = isBoh;
+                        data.times = JSON.stringify(times);
+                        $.post('/labour/schedules/add-edit-schedule', data, ret => {
                            let data = getJSON(ret);
                            if(data == null) return false;
                            closeNoty($noty);
-                           sendAlert('Successfully added schedule.');
+                           sendAlert('Successfully '+(id ? 'edited' : 'added')+' schedule.');
                            c.loadList(); 
                         });
                     }
