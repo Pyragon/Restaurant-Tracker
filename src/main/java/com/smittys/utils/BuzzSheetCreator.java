@@ -21,28 +21,6 @@ import java.util.Properties;
 
 public class BuzzSheetCreator {
 
-    public static void main(String[] args) {
-        Tracker tracker = new Tracker();
-        tracker.startConnections();
-
-        Properties prop = new Properties();
-        prop.put("date", new java.util.Date());
-        prop.put("sandwich", "Roast beef sandwich");
-        prop.put("soup", "Minestrone");
-        prop.put("veg", "Carrot, Broccoli, Cauliflower");
-
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-
-        try {
-            ArrayList<ScheduleTime> times = Utilities.getTimes(new Date(format.parse("06/30/2019").getTime()), 0, true);
-            prop.put("times", times);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            prop.put("times", new ArrayList<ScheduleTime>());
-        }
-        createBuzzSheet(prop);
-    }
-
     private static int[] COLUMN_WIDTHS = { 74, 39, 45, 43, 43, 58, 81, 43, 58, 81, 43 };
 
     private static int[] MERGED_CELLS = {0, 0, 0, 4,
@@ -333,7 +311,7 @@ public class BuzzSheetCreator {
 
     private static CellStyle small;
 
-    private static void createBuzzSheet(Properties props) {
+    public static void createBuzzSheet(Properties props) {
         Workbook workbook = new XSSFWorkbook();
 
         Sheet sheet = workbook.createSheet("Buzz Sheet");

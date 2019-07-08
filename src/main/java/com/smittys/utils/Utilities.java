@@ -114,11 +114,8 @@ public class Utilities {
         InventoryConnection.connection().handleRequest("fix-pack-units");
     }
 
-    public static ArrayList<ScheduleTime> getTimes(Date date, int day, boolean boh) {
-        Object[] data = LabourConnection.connection().handleRequest("get-schedule-by-start-date", date, boh ? 1 : 0);
-        if(data == null) return new ArrayList<>();
-        Schedule schedule = (Schedule) data[0];
-        data = LabourConnection.connection().handleRequest("get-schedule-times-by-id-and-day", schedule.getId(), day);
+    public static ArrayList<ScheduleTime> getTimes(Schedule schedule, int day) {
+        Object[] data = LabourConnection.connection().handleRequest("get-schedule-times-by-id-and-day", schedule.getId(), day);
         if(data == null) return new ArrayList<>();
         return (ArrayList<ScheduleTime>) data[0];
     }

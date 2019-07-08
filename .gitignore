@@ -2,6 +2,7 @@ props.json
 restarter
 target
 data/sales/*
+data/buzz_sheets/*
 .idea
 .settings
 .vscode

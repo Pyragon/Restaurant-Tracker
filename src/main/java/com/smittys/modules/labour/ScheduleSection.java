@@ -62,11 +62,26 @@ public class ScheduleSection implements WebSection {
                 prop.put("html", WebModule.render("./source/modules/labour/schedules/schedules_list.jade", model, request, response));
                 prop.put("pageTotal", data[0]);
                 break;
+            case "print-buzz-sheets":
+                String idString = request.queryParams("id");
+                int id;
+                try {
+                    id = Integer.parseInt(idString);
+                } catch(Exception e) {
+                    return error("Unable to parse id.");
+                }
+                Schedule schedule = LabourConnection.connection().selectClass("schedules", "id=?", Schedule.class, id);
+                if(schedule == null) return error("Cannot find schedule with that id.");
+                schedule.createBuzzSheets();
+                prop.put("success", true);
+                prop.put("message", "Buzz sheets have been successfully created.");
+                break;
+            case "print-schedule":
+                break;
             case "add-edit-schedule":
                 if(request.requestMethod().equals("GET")) {
                     if(request.queryParams().contains("id")) {
-                        String idString = request.queryParams("id");
-                        int id;
+                        idString = request.queryParams("id");
                         try {
                             id = Integer.parseInt(idString);
                         } catch(Exception e) {
@@ -74,7 +89,7 @@ public class ScheduleSection implements WebSection {
                             prop.put("error", "Error parsing id.");
                             break;
                         }
-                        Schedule schedule = LabourConnection.connection().selectClass("schedules", "id=?", Schedule.class, id);
+                        schedule = LabourConnection.connection().selectClass("schedules", "id=?", Schedule.class, id);
                         if(schedule == null) {
                             prop.put("success", false);
                             prop.put("error", "Unable to find schedule with that id.");
@@ -87,10 +102,9 @@ public class ScheduleSection implements WebSection {
                     prop.put("html", html);
                     break;
                 }
-                Schedule schedule = null;
+                schedule = null;
                 if(request.queryParams().contains("id")) {
-                    String idString = request.queryParams("id");
-                    int id;
+                    idString = request.queryParams("id");
                     try {
                         id = Integer.parseInt(idString);
                     } catch (Exception e) {

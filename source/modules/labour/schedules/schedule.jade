@@ -7,11 +7,22 @@ script.
         })
     })();
     
+    $(document).on('click', '#print-buzz-sheets', printBuzzSheets);
     $(document).on('click', '#add-schedule', () => addEditSchedule());
     $(document).on('click', '#edit-schedule', function() {
         let id = $(this).closest('tr').data('id');
         addEditSchedule(id);
     });
+
+    function printBuzzSheets() {
+        let id = $(this).closest('tr').data('id');
+        sendAlert('Creating... please wait.');
+        $.post('/labour/schedules/print-buzz-sheets', { id }, ret => {
+            let data = getJSON(ret);
+            if(!data) return false;
+            
+        });
+    }
     
     function addEditSchedule(id) {
         let data = id ? { id } : {};
