@@ -28,9 +28,8 @@ public class UserConnection extends DatabaseConnection {
             case "compare":
                 String username = (String) data[1];
                 String password = (String) data[2];
-                data = select("user_data", "username=?", GET_USER, username);
-                if (data == null) return null;
-                User user = (User) data[0];
+                User user = selectClass("user_data", "username=?", User.class, username);
+                if (user == null) return null;
                 String hash = user.getHash();
                 String salt = user.getSalt();
                 return new Object[]{BCrypt.hashPassword(password, salt).equals(hash), salt};

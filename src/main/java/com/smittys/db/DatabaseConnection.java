@@ -1,5 +1,6 @@
 package com.smittys.db;
 
+
 import com.google.common.base.CaseFormat;
 import com.smittys.Tracker;
 import com.smittys.entities.MySQLRead;

@@ -5,7 +5,11 @@ table.table.hs-table.table-condensed.table-responsive.hours-table.widget(style='
             th.t-center Invoice ID
             th.t-center Vendor
             th.t-center Ordered/Shipped
-            th.t-center Price
+            th.t-center Subtotal
+            th.t-center Discount
+            th.t-center GST
+            th.t-center PST
+            th.t-center Total
             th.t-center Ship Date
             th.t-center View
     tbody
@@ -15,7 +19,11 @@ table.table.hs-table.table-condensed.table-responsive.hours-table.widget(style='
                 td.b-right= invoice.getInvoiceId()
                 td.b-right= invoice.getVendor()
                 td.b-right= invoice.getQuantityShipped()+'/'+invoice.getQuantityOrdered()
-                td.b-right= numUtils.formatNumber(invoice.getPrice())
+                td.b-right= numUtils.formatNumber(invoice.getSubtotal())
+                td.b-right= numUtils.formatNumber(invoice.getDiscount())
+                td.b-right= numUtils.formatNumber(invoice.getGST())
+                td.b-right= numUtils.formatNumber(invoice.getPST())
+                td.b-right= numUtils.formatNumber(invoice.getTotal())
                 td.b-right= formatter.formatTimestamp(invoice.getShipDate(), 'EEE, MMM dd, YYYY')
                 td
                     i.vis-link.fa.fa-clipboard.view-invoice

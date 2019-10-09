@@ -14,7 +14,7 @@ public class DBConnectionManager {
     private HashMap<Connection, DatabaseConnection> connections;
 
     public DBConnectionManager() {
-        //loadDriver();
+        loadDriver();
         init();
     }
 

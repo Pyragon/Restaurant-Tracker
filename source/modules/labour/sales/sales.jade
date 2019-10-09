@@ -38,8 +38,29 @@ script.
                             sendAlert('Must specify an HTML file!');
                             return false;
                         }
-                        let file = fileEl.files[0];
-                        
+                        let files = fileEl[0].files;
+                        if(!files) {
+                            sendAlert('Unable to find valid file.');
+                            return false;
+                        }
+                        let file = files[0];
+                        let data = new FormData();
+                        data.append("date", date);
+                        data.append("file", file);
+                        console.log(data);
+                        $.ajax({
+                            url: '/labour/sales/add-sales', // le nom du fichier indiqué dans le formulaire
+                            type: 'POST', // la méthode indiquée dans le formulaire (get ou post)
+                            cache: false,
+                            data,
+                            processData: false,
+                            contentType: false,
+                            success: function(ret) { // je récupère la réponse du fichier PHP
+                                let data = getJSON(ret);
+                                if(data == null) return false;
+                                sendAlert('test');
+                            }        
+                        });
                     }
                 },
                 {

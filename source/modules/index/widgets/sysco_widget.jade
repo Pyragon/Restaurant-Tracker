@@ -9,14 +9,14 @@ div.widget.error-widget.right
         p.widget-information Next truck: TBA
     else
         -var suffix = numUtils.getDayOfMonthSuffix(nextTruck.getShipDate())
-        p.widget-information= 'Next truck: '+formatter.formatTimestamp(nextTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(nextTruck.getPrice())
+        p.widget-information= 'Next truck: '+formatter.formatTimestamp(nextTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(nextTruck.getTotal())
     if lastTruck != null
         -var suffix = numUtils.getDayOfMonthSuffix(lastTruck.getShipDate())
-    p.widget-information= 'Last truck: '+(lastTruck == null ? 'Error loading' : formatter.formatTimestamp(lastTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(lastTruck.getPrice()))
+    p.widget-information= 'Last truck: '+(lastTruck == null ? 'Error loading' : formatter.formatTimestamp(lastTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(lastTruck.getTotal()))
     if biggestTruck == null
         p.widget-information Error Loading...
     else
         -var suffix = numUtils.getDayOfMonthSuffix(biggestTruck.getShipDate())
-        p.widget-information= 'Biggest truck: '+formatter.formatTimestamp(biggestTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(biggestTruck.getPrice())
+        p.widget-information= 'Biggest truck: '+formatter.formatTimestamp(biggestTruck.getShipDate(), "EEE, MMM d'"+suffix+"', yyyy")+' - '+numUtils.formatNumber(biggestTruck.getTotal())
     p.widget-information= 'Sysco orders this year: '+total_orders
     p.widget-information= 'Total price this year: '+numUtils.formatNumber(total_orders_price)

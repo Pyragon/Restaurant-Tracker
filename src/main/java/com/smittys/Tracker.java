@@ -87,7 +87,7 @@ public class Tracker {
                 }
             }
             SearchManager.registerEndpoints();
-            Utilities.registerEndpoints();
+            Utilities.registerEndpoints(Utilities.ROUTES);
             errorManager.registerEndpoints();
             timerManager.run();
             System.out.println("Server started on " + java.net.InetAddress.getLocalHost() + ":" + Spark.port());

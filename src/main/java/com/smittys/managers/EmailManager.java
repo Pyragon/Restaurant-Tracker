@@ -96,8 +96,8 @@ public class EmailManager {
     }
 
     public static void checkEmails() {
-        readSales();
-        readInvoices();
+//        readSales();
+//        readInvoices();
     }
 
     public static void readInvoices() {
@@ -116,11 +116,11 @@ public class EmailManager {
             store.connect();
             Folder sysco = store.getDefaultFolder().getFolder("Sysco");
             sysco.open(Folder.READ_WRITE);
-            Message messages[] = sysco.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
-            sysco.setFlags(messages, new Flags(Flags.Flag.SEEN), true);
+            Message messages[] = sysco.getMessages();//sysco.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+            //sysco.setFlags(messages, new Flags(Flags.Flag.SEEN), true);
             Stream.of(messages).forEach(m -> {
                 try {
-                    if (!sysco.isOpen()) sysco.open(Folder.READ_ONLY);
+                    if (!sysco.isOpen()) sysco.open(Folder.READ_WRITE);
                     String subject = m.getSubject();
                     if (!subject.contains("SyscoSource Order Confirmation")) return;
                     Matcher matcher = invoiceIdPattern.matcher(subject);
@@ -130,13 +130,11 @@ public class EmailManager {
                     boolean invoiceExists = data != null;
                     String content = getTextFromMessage(m);
                     Document doc = Jsoup.parse(content);
-                    Elements tables = doc.select("table");
-                    Optional<Element> optional = tables.stream().filter(t -> t.attr("border").equals("0") && t.attr("cellspacing").equals("3") && t.attr("cellpadding").equals("5px")).findAny();
-                    if (!optional.isPresent()) return;
-                    Element table = optional.get();
+                    Elements tables = doc.getElementsByTag("table");
+                    Element table = tables.get(2);//tables.stream().filter(t -> t.attr("border").equals("0") && t.attr("cellspacing").equals("3") && t.attr("cellpadding").equals("5px")).findAny();
                     int quantityShipped = 0;
                     int quantityOrdered = 0;
-                    double price = 0;
+                    double subtotal = 0, gst = 0, pst = 0, discount = 0;
                     Timestamp shipDate = null;
                     Elements elements = table.getElementsByTag("td");
                     for (int i = 0; i < elements.size(); i++) {
@@ -149,13 +147,25 @@ public class EmailManager {
                         else if (element.text().equals("Quantity Shipped (Est.):"))
                             quantityShipped = Integer.parseInt(elements.get(i + 1).text());
                         else if (element.text().equals("Amount Shipped (Est.):"))
-                            price = Double.parseDouble(elements.get(i + 1).text());
+                            subtotal = Double.parseDouble(elements.get(i + 1).text());
                     }
-                    Invoice invoice = invoiceExists ? (Invoice) data[0] : new Invoice(-1, invoiceId, "Sysco", quantityOrdered, quantityShipped, price, shipDate, null, null);
+                    Element second = tables.get(3);
+                    elements = second.getElementsByTag("td");
+                    for(int i = 0; i < elements.size(); i++) {
+                        Element element = elements.get(i);
+                        if(element.text().equals("Total GST:"))
+                            gst = Double.parseDouble(elements.get(i + 1).text());
+                        else if(element.text().equals("Total PST:"))
+                            pst = Double.parseDouble(elements.get(i + 1).text());
+                        else if(element.text().equals("Misc Fees:"))
+                            discount = Double.parseDouble(elements.get(i + 1).text());
+                    }
+                    Invoice invoice = invoiceExists ? (Invoice) data[0] : new Invoice(-1, invoiceId, "Sysco", quantityOrdered, quantityShipped, subtotal, gst, pst, discount, shipDate, null, null);
                     if (!invoiceExists) InventoryConnection.connection().handleRequest("create-invoice", invoice);
-                    else if (quantityOrdered != invoice.getQuantityOrdered() || quantityShipped != invoice.getQuantityShipped() || price != invoice.getPrice())
-                        InventoryConnection.connection().handleRequest("edit-invoice-size", invoiceId, quantityOrdered, quantityShipped, price);
-                    optional = tables.stream().filter(t -> t.attr("border").equals("1") && t.attr("cellspacing").equals("3") && t.attr("cellpadding").equals("0")).findAny();
+                    else if(quantityOrdered < invoice.getQuantityOrdered()) return;
+                    else if (quantityOrdered != invoice.getQuantityOrdered() || quantityShipped != invoice.getQuantityShipped() || subtotal != invoice.getSubtotal() || gst != invoice.getGST() || pst != invoice.getPST())
+                        InventoryConnection.connection().handleRequest("edit-invoice-size", invoiceId, quantityOrdered, quantityShipped, subtotal, gst, pst, discount);
+                    Optional<Element> optional = tables.stream().filter(t -> t.attr("border").equals("1") && t.attr("cellspacing").equals("3") && t.attr("cellpadding").equals("0")).findAny();
                     if (!optional.isPresent())
                         return;
                     table = optional.get();
@@ -186,7 +196,7 @@ public class EmailManager {
                         quantityOrdered = Integer.parseInt(values.get(6).text());
                         quantityShipped = Integer.parseInt(values.get(7).text());
                         String shipUnit = values.get(8).text();
-                        price = Double.parseDouble(values.get(9).text());
+                        double price = Double.parseDouble(values.get(9).text());
                         double EXTPrice = Double.parseDouble(values.get(10).text());
                         String status = values.get(11).text();
                         ItemData itemData = needsCreate ? new ItemData(-1, itemCode, upcCode, price, itemName, "", brand, "Sysco", packCount, packSize, packUnit, "", null, null) : (ItemData) data[0];

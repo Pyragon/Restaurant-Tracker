@@ -35,24 +35,6 @@ script.
             $('.scrollable-modal').scrollTop($(this).offset().top);
         });
 
-        $('#add-modifier').click(() =>{
-            let div = $('<div class="report_line modal-tripple-array" data-key="modifiers"></div>');
-            let col1 = $('<div class="col-xs-4"></div>');
-            let name = $('<input class="triple-value" type="text" data-name="modifier-name" placeholder="Modifier Name"></input>');
-            let col2 = $('<div class="col-xs-4"></div>');
-            let code = $('<input class="triple-value" type="text" data-name="code" placeholder="Code or Name"></input>');
-            let col3 = $('<div class="col-xs-4"></div>');
-            let quant = $('<input class="triple-value" type="text" data-name="quantity" placeholder="(q) (unit)"></input>');
-            col1.append(name);
-            col2.append(code);
-            col3.append(quant);
-            div.append(col1);
-            div.append(col2);
-            div.append(col3);
-            $('.modifiers').find('.row').append(div);
-            $('.scrollable-modal').scrollTop($('.scrollable-modal')[0].scrollHeight);
-        });
-
     });
 div.noty_message
     span.noty_text
@@ -77,15 +59,15 @@ div.noty_message
         div(style='clear: both;')
         i.fa.fa-plus-circle#add-recipe-line(style='margin: auto auto 10px auto; cursor: pointer;')
         h3 Modifiers
-        div.modifiers
-            div.container(style='width: 310px;')
-                div.row
-                    div.report_line.modal-triple-array(data-key='modifiers')
-                        div.col-xs-4
-                            input.triple-value(type='text', data-name='modifier-name', placeholder='Modifier Name')
-                        div.col-xs-4
-                            input.triple-value(type='text', data-name='code', placeholder='Code or Name')
-                        div.col-xs-4
-                            input.triple-value(type='text', data-name='quantity', placeholder='(q) (unit)')
-        i.fa.fa-plus-circle#add-modifier(style='margin: auto auto 10px auto; cursor: pointer;')
+        .modifiers
+            .modifier
+                .report_line
+                    label.name(style='min-width: 95px') Name
+                    input.modal-input(type='text', data-name='mod-name', placeholder='Modifier Name')
+                .mod-recipe
+                    .report_line
+                        input.first.name(type='text', data-name='code', placeholder='Code or Name', style='min-width: 105px !important; max-width: 105px !important;')
+                        input.second.value(type='text', data-name='quantity', placeholder='(q) (unit)', style='min-width: 105px !important; max-width: 105px !important;')
+                i.fa.fa-plus-circle#add-modifier-recipe(style='margin: 10px auto 10px auto; cursor: pointer;')
+        i.fa.fa-plus-circle#add-modifier(style='margin: 10px auto 10px auto; cursor: pointer;')
 div.noty_close

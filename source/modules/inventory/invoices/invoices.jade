@@ -6,6 +6,29 @@ script.
             c.setup();
         });
     })();
+
+    $(document).ready(() => {
+
+        $(document).on('click', '.view-invoice', function() {
+            let id = $(this).closest('tr').data('id');
+            $.post('/inventory/invoices/view-invoice', { id }, ret => {
+                let data = getJSON(ret);
+                if(data == null) return false;
+                n = noty({
+                    text: 'View Invoice',
+                    type: 'confirm',
+                    layout: 'centerBig',
+                    template: data.html,
+                    dismissQueue: false,
+                    theme: 'cryogen',
+                    buttons: [{
+                        addClass: 'btn btn-danger', text: 'Close', onClick: closeNoty
+                    }]
+                });
+            });
+        });
+
+    });
 h5 Invoices
 p.small.info The following is a list of all invoices
 div.row

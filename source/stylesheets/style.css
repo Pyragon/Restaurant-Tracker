@@ -93,6 +93,14 @@ body {
     color: #888;
 }
 
+.modifier {
+    width: 240px;
+    height: 130px;
+    margin: auto;
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
 .create-employee {
     margin: auto;
     text-align: center;

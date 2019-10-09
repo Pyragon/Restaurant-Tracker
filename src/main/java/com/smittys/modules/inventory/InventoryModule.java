@@ -23,6 +23,7 @@ public class InventoryModule extends WebModule {
         sections.put("invoices", new InvoicesModule());
         sections.put("invoice-items", new InvoiceItemsModule());
         sections.put("meals", new KitchenMealsSection());
+        sections.put("modifiers", new ModifiersSection());
     }
 
     @Override

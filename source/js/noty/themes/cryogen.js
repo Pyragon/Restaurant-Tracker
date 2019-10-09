@@ -1,7 +1,7 @@
 $.noty.themes.cryogen = {
     name: 'cryogen',
     helpers: {
-        borderFix: function() {
+        borderFix: function () {
             if (this.options.dismissQueue) {
                 var selector = this.options.layout.container.selector + ' ' + this.options.layout.parent.selector;
                 switch (this.options.layout.name) {
@@ -20,6 +20,8 @@ $.noty.themes.cryogen = {
                     case 'bottomLeft':
                     case 'bottomRight':
                     case 'center':
+                    case 'centerScroll':
+                    case 'centerBig':
                     case 'centerLeft':
                     case 'centerRight':
                     case 'inline':
@@ -62,7 +64,7 @@ $.noty.themes.cryogen = {
             top: 0
         }
     },
-    style: function() {
+    style: function () {
 
         this.$bar.css({
             overflow: 'hidden',
@@ -105,10 +107,10 @@ $.noty.themes.cryogen = {
         });
 
         this.$bar.on({
-            mouseenter: function() {
+            mouseenter: function () {
                 $(this).find('.noty_close').stop().fadeTo('normal', 1);
             },
-            mouseleave: function() {
+            mouseleave: function () {
                 $(this).find('.noty_close').stop().fadeTo('normal', 0);
             }
         });
@@ -125,6 +127,8 @@ $.noty.themes.cryogen = {
                 break;
             case 'topCenter':
             case 'center':
+            case 'centerScroll':
+            case 'centerBig':
             case 'bottomCenter':
             case 'inline':
                 this.$bar.css({
@@ -233,10 +237,10 @@ $.noty.themes.cryogen = {
         }
     },
     callback: {
-        onShow: function() {
+        onShow: function () {
             $.noty.themes.cryogen.helpers.borderFix.apply(this);
         },
-        onClose: function() {
+        onClose: function () {
             $.noty.themes.cryogen.helpers.borderFix.apply(this);
         }
     }

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
+import static com.smittys.modules.WebModule.error;
+
 public class InvoicesModule implements WebSection {
 
     @Override
@@ -61,6 +63,20 @@ public class InvoicesModule implements WebSection {
                 prop.put("success", true);
                 prop.put("html", WebModule.render("./source/modules/inventory/invoices/invoices_list.jade", model, request, response));
                 prop.put("pageTotal", data[0]);
+                break;
+            case "view-invoice":
+                String idString = request.queryParams("id");
+                int id;
+                try {
+                    id = Integer.parseInt(idString);
+                } catch(Exception e) {
+                    return error("Error parsing id.");
+                }
+                Invoice invoice = InventoryConnection.connection().selectClass("invoices", "id=?", Invoice.class, id);
+                if(invoice == null) return error("Unable to find invoice with that ID.");
+                model.put("invoice", invoice);
+                prop.put("html", WebModule.render("./source/modules/inventory/invoices/view_invoice.jade", model, request, response));
+                prop.put("success", true);
                 break;
         }
         return Tracker.getGson().toJson(prop);

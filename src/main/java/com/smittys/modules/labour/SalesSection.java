@@ -6,15 +6,26 @@ import com.smittys.entities.DailySales;
 import com.smittys.entities.Note;
 import com.smittys.entities.WebSection;
 import com.smittys.modules.WebModule;
+import lombok.Cleanup;
 import spark.Request;
 import spark.Response;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+
+import static com.smittys.modules.WebModule.error;
 
 public class SalesSection implements WebSection {
 
@@ -60,7 +71,7 @@ public class SalesSection implements WebSection {
                     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
                     Object salesData = Tracker.getInstance().getCachingManager().get("daily-sales-cache").getCachedData(format.format(t));
                     if(salesData == null)
-                        return WebModule.error("Unable to load sales date: "+format.format(t));
+                        return error("Unable to load sales date: "+format.format(t));
                     dailySales.add((DailySales) salesData);
                 }
                 data = LabourConnection.connection().handleRequest("get-all-sales-days-count");
@@ -75,6 +86,36 @@ public class SalesSection implements WebSection {
                     prop.put("html", WebModule.render("./source/modules/labour/sales/add_sales.jade", model, request, response));
                     break;
                 }
+                System.out.println("Here");
+                String dateString = request.queryParams("date");
+                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+                Date date;
+                System.out.println(request.queryParams());
+                try {
+                    format.parse(dateString);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                    return error("Unable to parse date.");
+                }
+                System.out.println("Here");
+                File dir = new File("./source/uploaded_sales/");
+                try {
+                    Path tempFile = Files.createTempFile(dir.toPath(), "", "");
+                    request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+                    @Cleanup
+                    InputStream stream = request.raw().getPart("file").getInputStream();
+                    Files.copy(stream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+                    File file = tempFile.toFile();
+                    File renamed = new File(dir.toPath()+"/"+dateString+".html");
+                    file.renameTo(renamed);
+
+                    prop.put("success", true);
+                    prop.put("message", "Should have saved now.");
+
+                } catch(IOException | ServletException e) {
+                    e.printStackTrace();
+                }
                 break;
             case "add-note":
                 if (request.requestMethod().equals("GET")) {
@@ -82,10 +123,9 @@ public class SalesSection implements WebSection {
                     prop.put("html", WebModule.render("./source/modules/labour/sales/add_note.jade", model, request, response));
                     break;
                 }
-                String dateString = request.queryParams("date");
+                dateString = request.queryParams("date");
                 String note = request.queryParams("note");
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                Date date;
+                format = new SimpleDateFormat("yyyy-MM-dd");
                 try {
                     date = format.parse(dateString);
                 } catch (Exception e) {

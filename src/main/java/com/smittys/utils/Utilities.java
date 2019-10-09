@@ -1,6 +1,5 @@
 package com.smittys.utils;
 
-import com.mysql.jdbc.StringUtils;
 import com.smittys.Tracker;
 import com.smittys.db.impl.InventoryConnection;
 import com.smittys.db.impl.LabourConnection;
@@ -10,6 +9,7 @@ import com.smittys.entities.ScheduleTime;
 import com.smittys.entities.User;
 import com.smittys.managers.EmailManager;
 import com.smittys.modules.WebModule;
+import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -25,13 +25,13 @@ import static com.smittys.modules.WebModule.error;
 
 public class Utilities {
 
-    private static String[] ROUTES = {"GET", "/utilities/:action", "POST", "/utilities/:action"};
+    public static String[] ROUTES = {"GET", "/utilities/:action", "POST", "/utilities/:action"};
 
-    public static void registerEndpoints() {
+    public static void registerEndpoints(String[] routes) {
         int index = 0;
-        while (index < ROUTES.length) {
-            String method = ROUTES[index++];
-            String route = ROUTES[index++];
+        while (index < routes.length) {
+            String method = routes[index++];
+            String route = routes[index++];
             Route sparkRoute = (req, res) -> handleEndpoints(req, res);
             if (method.equals("GET")) Spark.get(route, sparkRoute);
             else Spark.post(route, sparkRoute);
@@ -111,7 +111,12 @@ public class Utilities {
     public static void main(String[] args) {
         Tracker tracker = new Tracker();
         tracker.startConnections();
-        InventoryConnection.connection().handleRequest("fix-pack-units");
+        User user = UserConnection.connection().selectClass("user_data", "username=?", User.class, "cody");
+        if(user == null) return;
+        String salt = user.getSalt();
+        String hash = BCrypt.hashPassword("sdfsdf", salt);
+        UserConnection.connection().set("user_data", "hash=?", "id=?", hash, user.getId());
+        System.out.println("Saved");
     }
 
     public static ArrayList<ScheduleTime> getTimes(Schedule schedule, int day) {
@@ -122,7 +127,7 @@ public class Utilities {
 
     public static boolean isNullOrEmpty(String... strings) {
         for (String s : strings)
-            if (StringUtils.isNullOrEmpty(s)) return true;
+            if (StringUtils.isBlank(s)) return true;
         return false;
     }
 

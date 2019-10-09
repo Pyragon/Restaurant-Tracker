@@ -91,37 +91,40 @@ public class InventoryConnection extends DatabaseConnection {
             case "get-sales-by-year":
                 return select("sales", "YEAR(date)=YEAR(?)", GET_SALES_ITEMS, data[1]);
             case "create-invoice":
-                insert("invoice_data", ((Invoice) data[1]).data());
+                insert("invoices", ((Invoice) data[1]).data());
                 break;
             case "delete-invoice":
-                delete("invoice_data", "invoice_id=?", (long) data[1]);
+                delete("invoices", "invoice_id=?", (long) data[1]);
                 break;
             case "get-invoices":
                 page = (int) data[1];
                 if (page <= 0) page = 1;
                 offset = (page - 1) * 10;
-                return select("invoice_data", null, "ORDER BY ship_date DESC LIMIT " + offset + ",10", GET_INVOICES);
+                return select("invoices", null, "ORDER BY ship_date DESC LIMIT " + offset + ",10", GET_INVOICES);
             case "get-invoices-page-count":
-                return new Object[]{Utilities.roundUp(selectCount("invoice_data", null), 10)};
+                return new Object[]{Utilities.roundUp(selectCount("invoices", null), 10)};
             case "edit-invoice-size":
                 long invoiceId = (long) data[1];
                 int ordered = (int) data[2];
                 int shipped = (int) data[3];
-                double price = (double) data[4];
-                set("invoice_data", "quantity_ordered=?, quantity_shipped=?, price=?", "invoice_id=?", ordered, shipped, price, invoiceId);
+                double subtotal = (double) data[4];
+                double gst = (double) data[5];
+                double pst = (double) data[6];
+                double discount = (double) data[7];
+                set("invoices", "quantity_ordered=?, quantity_shipped=?, subtotal=?, gst=?, pst=?, discount=?", "invoice_id=?", ordered, shipped, subtotal, gst, pst, discount, invoiceId);
                 break;
             case "get-biggest-truck-this-year":
-                return select("invoice_data", "YEAR(ship_date) = YEAR(CURDATE())", "ORDER BY price DESC LIMIT 1", GET_INVOICE);
+                return select("invoices", "YEAR(ship_date) = YEAR(CURDATE())", "ORDER BY price DESC LIMIT 1", GET_INVOICE);
             case "get-biggest-truck-this-month":
-                return select("invoice_data", "MONTH(ship_date) = MONTH(CURDATE())", "ORDER BY price DESC LIMIT 1", GET_INVOICE);
+                return select("invoices", "MONTH(ship_date) = MONTH(CURDATE())", "ORDER BY (subtotal+gst+pst+discount) DESC LIMIT 1", GET_INVOICE);
             case "get-total-orders":
-                return new Object[]{selectCount("invoice_data", "YEAR(ship_date) = YEAR(CURDATE())")};
+                return new Object[]{selectCount("invoices", "YEAR(ship_date) = YEAR(CURDATE())")};
             case "get-total-orders-price":
                 double total = 0;
-                data = select("invoice_data", "YEAR(ship_date) = YEAR(CURDATE())", GET_INVOICES);
+                data = select("invoices", "YEAR(ship_date) = YEAR(CURDATE())", GET_INVOICES);
                 if (data == null) return new Object[]{0};
                 ArrayList<Invoice> list = (ArrayList<Invoice>) data[0];
-                total = list.stream().mapToDouble(i -> i.getPrice()).sum();
+                total = list.stream().mapToDouble(i -> i.getTotal()).sum();
                 return new Object[]{total};
             case "get-kitchen-meals":
                 page = (int) data[1];
@@ -156,9 +159,9 @@ public class InventoryConnection extends DatabaseConnection {
                 delete("recipe_items", "id=?", data[1]);
                 break;
             case "get-last-truck":
-                return select("invoice_data", "ship_date " + (opcode.contains("last") ? "<" : ">") + " CURDATE() ORDER BY ship_date " + (opcode.contains("last") ? "DESC" : "ASC") + " LIMIT 1", GET_INVOICE);
+                return select("invoices", "ship_date " + (opcode.contains("last") ? "<" : ">") + " CURDATE() ORDER BY ship_date " + (opcode.contains("last") ? "DESC" : "ASC") + " LIMIT 1", GET_INVOICE);
             case "get-invoice":
-                return select("invoice_data", "invoice_id=?", GET_INVOICE, String.valueOf(data[1]));
+                return select("invoices", "invoice_id=?", GET_INVOICE, String.valueOf(data[1]));
             case "get-items":
                 page = (int) data[1];
                 if (page <= 0) page = 1;
@@ -229,14 +232,17 @@ public class InventoryConnection extends DatabaseConnection {
     private final Invoice getInvoice(ResultSet set) {
         int id = getInt(set, "id");
         long invoiceId = getLongInt(set, "invoice_id");
-        String vendorName = getString(set, "vendor_name");
+        String vendorName = getString(set, "vendor");
         int quantityOrdered = getInt(set, "quantity_ordered");
         int quantityShipped = getInt(set, "quantity_shipped");
-        double price = getDouble(set, "price");
+        double subtotal = getDouble(set, "subtotal");
+        double gst = getDouble(set, "gst");
+        double pst = getDouble(set, "pst");
+        double discount = getDouble(set, "discount");
         Timestamp shipDate = getTimestamp(set, "ship_date");
         Timestamp dateEntered = getTimestamp(set, "date_entered");
         Timestamp lastUpdated = getTimestamp(set, "last_updated");
-        return new Invoice(id, invoiceId, vendorName, quantityOrdered, quantityShipped, price, shipDate, dateEntered, lastUpdated);
+        return new Invoice(id, invoiceId, vendorName, quantityOrdered, quantityShipped, subtotal, gst, pst, discount, shipDate, dateEntered, lastUpdated);
     }
 
     private final ItemData getItemData(ResultSet set) {
