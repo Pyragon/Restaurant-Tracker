@@ -62,8 +62,11 @@ div.noty_message
         .modifiers
             .modifier
                 .report_line
-                    label.name(style='min-width: 95px') Name
+                    label.name(style='min-width: 95px;') Name
                     input.modal-input(type='text', data-name='mod-name', placeholder='Modifier Name')
+                .report_line
+                    label.name(style='min-width: 95px; margin-top: 20px;') Price
+                    input.modal-input(type='text', data-name='mod-price', placeholder='Price')
                 .mod-recipe
                     .report_line
                         input.first.name(type='text', data-name='code', placeholder='Code or Name', style='min-width: 105px !important; max-width: 105px !important;')

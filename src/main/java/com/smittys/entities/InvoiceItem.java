@@ -1,5 +1,6 @@
 package com.smittys.entities;
 
+import com.smittys.db.impl.InventoryConnection;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +31,12 @@ public class InvoiceItem {
         format.setMaximumFractionDigits(2);
         format.setMinimumFractionDigits(2);
         return format.format(EXTPrice);
+    }
+
+    public String getName() {
+        ItemData data = InventoryConnection.connection().selectClass("item_data", "item_code=?", ItemData.class, itemCode);
+        if(data == null) return "N/A";
+        return data.getItemName();
     }
 
     public Object[] data() {

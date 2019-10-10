@@ -5,6 +5,7 @@ import com.google.common.base.CaseFormat;
 import com.smittys.Tracker;
 import com.smittys.entities.MySQLRead;
 import com.smittys.entities.SQLQuery;
+import com.smittys.utils.Utilities;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -186,6 +187,16 @@ public abstract class DatabaseConnection {
         return selectList(table, null, null, c, values);
     }
 
+    public <T> ArrayList<T> selectListPage(String table, int page, Class<T> c, Object... values) {
+        return selectListPage(table, null, page, c, values);
+    }
+
+    public <T> ArrayList<T> selectListPage(String table, String condition, int page, Class<T> c, Object... values) {
+        if (page <= 0) page = 1;
+        int offset = (page - 1) * 10;
+        return selectList(table, condition, "LIMIT "+offset+",10", c, values);
+    }
+
     public <T> ArrayList<T> selectList(String table, String condition, String order, Class<T> c, Object... values) {
         try {
             if(connection.isClosed() || !connection.isValid(5)) connect();
@@ -315,6 +326,14 @@ public abstract class DatabaseConnection {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public int selectCountRounded(String table) {
+        return selectCountRounded(table, null);
+    }
+
+    public int selectCountRounded(String table, String condition, Object... values) {
+        return (int) Utilities.roundUp(selectCount(table, condition, values), 10);
     }
 
     public int selectCount(String database, String condition, Object... values) {

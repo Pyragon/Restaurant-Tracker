@@ -51,7 +51,7 @@ public class InvoiceItemsModule implements WebSection {
                     prop.put("error", "Error loading recipe items.");
                     break;
                 }
-                ArrayList<RecipeItem> items = (ArrayList<RecipeItem>) data[0];
+                ArrayList<ItemData> items = (ArrayList<ItemData>) data[0];
                 model.put("items", items);
                 data = InventoryConnection.connection().handleRequest("get-items-count");
                 if (data == null) {

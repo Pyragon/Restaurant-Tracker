@@ -68,4 +68,8 @@ public class RecipeItem {
         }
         return cost;//new Object[]{approx, cost}; //cache?
     }
+
+    public double getProfit() {
+        return price - cost;
+    }
 }

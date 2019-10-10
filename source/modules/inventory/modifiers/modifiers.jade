@@ -1,3 +1,35 @@
+script.
+    let c;
+    (async function() {
+        import('/js/module-helper.js').then(mod => {
+            c = new mod.ModuleHelper('modifiers', '/inventory/modifiers');
+            c.setup();
+        });
+    })();
+
+    $('#add-modifier').click(() => {
+        $.get('/inventory/modifiers/add-edit', {}, ret => {
+            var data = getJSON(ret);
+            if(data == null) return false;
+            n = noty({
+            text: 'Add Modifier',
+                type: 'confirm',
+                layout: 'centerScroll',
+                template: data.html,
+                dismissQueue: false,
+                theme: 'cryogen',
+                buttons: [{
+                    addClass: 'btn btn-primary submit-btn', text: 'Add', onClick: ($noty) => {
+                        
+                    }
+                },
+                {
+                    addClass: 'btn btn-danger', text: 'Cancel', onClick: closeNoty
+                }]
+            });
+        });
+    });
+
 div#modifiers
     h5 Modifiers
     p.small.info The following is a list of all items requiring a recipe

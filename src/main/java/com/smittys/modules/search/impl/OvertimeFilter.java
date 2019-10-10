@@ -21,7 +21,6 @@ public class OvertimeFilter extends Filter {
             Object parsed = parseBoolean(value);
             if (parsed == null) return false;
             overtime = (boolean) parsed;
-            System.out.println(overtime);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

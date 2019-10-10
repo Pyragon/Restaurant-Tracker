@@ -6,9 +6,9 @@ General:
     ☐ Display as integers instead of doubles on whole numbers (1 vs 1.0)
 
 DB:
-    ☐ Remake DB to simply take a class instead of SQLQuery
-    ☐ Will go through each final field in class, get associated data
-    ☐ If name is not camelCase -> camel_case then have annotation for name 
+    ✔ Remake DB to simply take a class instead of SQLQuery @done (10/10/2019, 1:57:07 AM)
+    ✔ Will go through each final field in class, get associated data @done (10/10/2019, 1:57:12 AM)
+    ✔ If name is not camelCase -> camel_case then have annotation for name @done (10/10/2019, 1:57:15 AM)
 
 Misc:
     ☐ Add message to login users on first login to change from default password
@@ -35,8 +35,6 @@ Labour:
         ☐ items_sold: <900 would return all days with under 20 items sold
         ☐ Include example
     Employees:
-        ☐ Get all employees proper start dates
-        ☐ Get all employees proper wages
         ☐ Ensure all search filters work
         ☐ Figure out multiple hires of same person
         ☐ Adding hours from employees section should update hours section
@@ -54,7 +52,7 @@ Inventory:
     Invoice:
         ☐ Ability to add non-sysco invoice
     Counts:
-        ☐ Include section for counts
+        ✔ Include section for counts @done (10/10/2019, 1:58:03 AM)
         ☐ List of sub-sections (FOH, Cooler, etc)
         ☐ Clicking sub-section will open modal with list of all the products
         ☐ Ability to edit position of products within this list
@@ -69,7 +67,6 @@ Inventory:
         ☐ When adding invoice items from Sysco orders, if ordering b/c, pack size/count is correct, price is correct, ensure it's being added as only 1 item though
         ☐ Figure out yields
     Recipe Items:
-        ☐ Finish adding all recipe items
         ☐ Add filters
         ☐ Add example
         ☐ Add functionality to 'Add Recipe Item' button

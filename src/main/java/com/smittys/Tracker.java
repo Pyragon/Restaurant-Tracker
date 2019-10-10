@@ -26,7 +26,7 @@ public class Tracker {
 
     private static @Getter
     Tracker instance;
-    private @Getter
+    private static @Getter
     Properties properties;
     private static @Getter
     Gson gson;

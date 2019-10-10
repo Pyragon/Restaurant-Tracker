@@ -32,6 +32,7 @@ public abstract class WebModule {
             model.put("numUtils", new NumberUtils());
             model.put("roles", new RoleNames());
             model.put("utils", new ModuleUtils());
+            model.put("name", Tracker.getProperties().get("name"));
             boolean loggedIn = isLoggedIn(request);
             model.put("loggedIn", loggedIn);
             if (loggedIn) model.put("user", getUser(request));

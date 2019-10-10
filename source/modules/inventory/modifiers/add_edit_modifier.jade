@@ -1,0 +1,19 @@
+div.noty_message
+    span.noty_text
+    div.widget.register.scrollable-modal(style='margin-top: 5px;')
+        div.report_line
+            label.name Modifier Name
+            input.modal-input(type='text', data-name='mod-name', placeholder='Modifier Name')
+        div(style='clear: both;')
+        div.report_line
+            label.name Price
+            input.modal-input(type='text', data-name='price', placeholder='Price')
+        div(style='clear: both;')
+        h3(style='margin-top: 0px;') Recipe
+        div.recipe
+            div.report_line.modal-input-array(data-key='recipe')
+                input.first.name(type='text', data-name='code', placeholder='Code or Name')
+                input.second.value(type='text', data-name='quantity', placeholder='(q) (unit)')
+        div(style='clear: both;')
+        i.fa.fa-plus-circle#add-recipe-line(style='margin: auto auto 10px auto; cursor: pointer;')
+div.noty_close
