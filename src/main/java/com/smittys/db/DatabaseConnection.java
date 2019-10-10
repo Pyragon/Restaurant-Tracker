@@ -237,11 +237,13 @@ public abstract class DatabaseConnection {
             List<Class<?>> types = new ArrayList<>();
             List<Object> cValues = new ArrayList<>();
             for (Field field : c.getDeclaredFields()) {
-                if (!Modifier.isFinal(field.getModifiers())) continue;
+                if (!Modifier.isFinal(field.getModifiers()) && !field.isAnnotationPresent(MySQLRead.class)) continue;
                 types.add(field.getType());
                 String name = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
-                if (field.isAnnotationPresent(MySQLRead.class))
-                    name = field.getAnnotation(MySQLRead.class).value();
+                if (field.isAnnotationPresent(MySQLRead.class)) {
+                    String value = field.getAnnotation(MySQLRead.class).value();
+                    if(!value.equals("null")) name = value;
+                }
                 switch (field.getType().getSimpleName().toLowerCase()) {
                     case "int":
                         cValues.add(getInt(set, name));
@@ -392,7 +394,7 @@ public abstract class DatabaseConnection {
             String query = "INSERT INTO `" + database + "` VALUES(" + insert.toString() + ")";
             PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             setParams(stmt, objects);
-            System.out.println(stmt);
+//            System.out.println(stmt);
             stmt.execute();
             ResultSet set = stmt.getGeneratedKeys();
             if (set.next()) return set.getInt(1);

@@ -8,6 +8,46 @@ script.
     })();
     
     $(document).on('click', '#add-note', addNote);
+    $(document).on('click', '#add-sales', addSales);
+
+    function addSales() {
+        $.get('/labour/sales/add-sales', {}, ret => {
+            let data = getJSON(ret);
+            if(data == null) return false;
+            n = noty({
+                text: 'Add Sales',
+                type: 'confirm',
+                layout: 'center',
+                template: data.html,
+                dismissQueue: false,
+                theme: 'cryogen',
+                buttons: [{
+                    addClass: 'btn btn-primary submit-btn', text: 'Add', onClick: ($noty) => {
+                        let date = $('input[data-name="date"]').val();
+                        let fileEl = $('input[data-name="file"]');
+                        let fileName = fileEl.val();
+                        if(!date) {
+                            sendAlert('No date entered!');
+                            return false;
+                        }
+                        if(!fileEl) {
+                            sendAlert('No file specified!');
+                            return false;
+                        }
+                        if(!fileName.endsWith('.html')) {
+                            sendAlert('Must specify an HTML file!');
+                            return false;
+                        }
+                        let file = fileEl.files[0];
+                        
+                    }
+                },
+                {
+                    addClass: 'btn btn-danger', text: 'Cancel', onClick: closeNoty
+                }]
+            });
+        });
+    }
     
     function addNote() {
         let date = $(this).closest('tr').data('id');
@@ -57,6 +97,10 @@ div.row
                     p.color-grey.search-info Filters: 
                 div.col-xs-4
                     p.color-grey.search-info Example: 
+            div(style='float: right; margin: 33.5px 5px;')
+                    div.link#add-sales
+                        i.fa.fa-plus-square
+                        span  Add Sales
 div.row(style='padding: 15px;')
     div#search(style='clear: both; float: right; margin-bottom: 15px; text-align: left;')
         div

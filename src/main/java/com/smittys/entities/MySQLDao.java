@@ -10,13 +10,26 @@ public abstract class MySQLDao {
         ArrayList<Object> list = new ArrayList<>();
         try {
             for (Field field : this.getClass().getDeclaredFields()) {
-                if(!Modifier.isFinal(field.getModifiers())) continue;
+                if(!Modifier.isFinal(field.getModifiers()) && !field.isAnnotationPresent(MySQLRead.class))
+                    continue;
+                field.setAccessible(true);
+                Object value = field.get(this);
                 if (field.isAnnotationPresent(MySQLDefault.class)) {
-                    list.add("DEFAULT");
+                    if(value instanceof Integer) {
+                        if((int) value == -1) {
+                            list.add("DEFAULT");
+                            continue;
+                        }
+                    } else {
+                        list.add("DEFAULT");
+                        continue;
+                    }
+                }
+                if(value == null) {
+                    list.add("NULL");
                     continue;
                 }
-                field.setAccessible(true);
-                list.add(field.get(this));
+                list.add(value);
             }
         } catch(IllegalAccessException e) {
             e.printStackTrace();

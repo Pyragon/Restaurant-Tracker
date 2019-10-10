@@ -5,10 +5,12 @@ import com.smittys.Tracker;
 import com.smittys.db.impl.LabourConnection;
 import com.smittys.entities.*;
 import com.smittys.modules.WebModule;
+import org.apache.commons.lang3.time.DateUtils;
 import spark.Request;
 import spark.Response;
 
 import java.sql.Timestamp;
+import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -60,34 +62,83 @@ public class ScheduleSection implements WebSection {
                 prop.put("html", WebModule.render("./source/modules/labour/schedules/schedules_list.jade", model, request, response));
                 prop.put("pageTotal", data[0]);
                 break;
-            case "add-schedule":
+            case "add-edit-schedule":
                 if(request.requestMethod().equals("GET")) {
-                    html = WebModule.render("./source/modules/labour/schedules/add_schedule.jade", model, request, response);
+                    if(request.queryParams().contains("id")) {
+                        String idString = request.queryParams("id");
+                        int id;
+                        try {
+                            id = Integer.parseInt(idString);
+                        } catch(Exception e) {
+                            prop.put("success", false);
+                            prop.put("error", "Error parsing id.");
+                            break;
+                        }
+                        Schedule schedule = LabourConnection.connection().selectClass("schedules", "id=?", Schedule.class, id);
+                        if(schedule == null) {
+                            prop.put("success", false);
+                            prop.put("error", "Unable to find schedule with that id.");
+                            break;
+                        }
+                        model.put("schedule", schedule);
+                    }
+                    html = WebModule.render("./source/modules/labour/schedules/schedule_modal.jade", model, request, response);
                     prop.put("success", true);
                     prop.put("html", html);
                     break;
                 }
+                Schedule schedule = null;
+                if(request.queryParams().contains("id")) {
+                    String idString = request.queryParams("id");
+                    int id;
+                    try {
+                        id = Integer.parseInt(idString);
+                    } catch (Exception e) {
+                        prop.put("success", false);
+                        prop.put("error", "Error parsing id.");
+                        break;
+                    }
+                    schedule = LabourConnection.connection().selectClass("schedules", "id=?", Schedule.class, id);
+                    if (schedule == null) {
+                        prop.put("success", false);
+                        prop.put("error", "Unable to find schedule with that id.");
+                        break;
+                    }
+                }
                 int insertId = -1;
+                boolean changeBOH = false;
+                boolean boh = false;
                 try {
                     String weekStartString = request.queryParams("weekStart");
                     DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
                     Date date;
                     try {
-                        date = format.parse(weekStartString);
+                        date = new Date(format.parse(weekStartString).getTime());
                     } catch (Exception e) {
                         e.printStackTrace();
                         return error("Week Start must be in MM/dd/yyyy format");
                     }
+                    if(schedule != null && !DateUtils.isSameDay(date, schedule.getStartDate())) {
+                        prop.put("success", false);
+                        prop.put("error", "Unable to change start date for schedules. Please delete and recreate schedule.");
+                        break;
+                    }
                     boolean isBoh = Boolean.parseBoolean(request.queryParams("isBoh"));
                     String times = request.queryParams("times");
                     ArrayList<ArrayList<LinkedTreeMap<String, String>>> list = Tracker.getGson().fromJson(times, ArrayList.class);
-                    Schedule schedule = new Schedule(-1, isBoh, new Timestamp(date.getTime()), null, null);
-                    insertId = LabourConnection.connection().insert("schedules", schedule.data());
-                    if (insertId == -1) {
-                        prop.put("success", false);
-                        prop.put("error", "Error inserting schedule.");
-                        deleteSchedule(insertId);
-                        break;
+                    if(schedule != null) {
+                        if(isBoh != schedule.isBoh()) {
+                            changeBOH = true;
+                            boh = isBoh;
+                        }
+                    } else {
+                        insertId = LabourConnection.connection().insert("schedules", new Schedule(-1, isBoh, new Date(date.getTime()), null, null).data());
+                        if (insertId == -1) {
+                            prop.put("success", false);
+                            prop.put("error", "Error inserting schedule.");
+                            deleteSchedule(insertId);
+                            break;
+                        }
                     }
                     ArrayList<ScheduleTime>[] days = new ArrayList[7];
                     dayLoop:
@@ -106,7 +157,7 @@ public class ScheduleSection implements WebSection {
                             if (data == null) {
                                 prop.put("success", false);
                                 prop.put("error", "Unable to find employee for that name.");
-                                deleteSchedule(insertId);
+                                if(schedule == null) deleteSchedule(insertId);
                                 break dayLoop;
                             }
                             Employee employee = (Employee) data[0];
@@ -114,40 +165,50 @@ public class ScheduleSection implements WebSection {
                             if (startStamp == null) {
                                 prop.put("success", false);
                                 prop.put("error", "Error in parsing starting time for " + name + " on day " + i);
-                                deleteSchedule(insertId);
+                                if(schedule == null) deleteSchedule(insertId);
                                 break dayLoop;
                             }
                             if (end.equals("") && isBoh) {
                                 prop.put("success", false);
                                 prop.put("error", "BOH schedules must have an endtime. Missing endtime for " + name + " on day " + i);
-                                deleteSchedule(insertId);
+                                if(schedule == null) deleteSchedule(insertId);
                                 break dayLoop;
                             }
-                            Timestamp endStamp = HoursSection.formatTime(cal.getTime(), end);
-                            if (endStamp == null) {
-                                prop.put("success", false);
-                                prop.put("error", "Error in parsing ending time for " + name + " on day " + i);
-                                deleteSchedule(insertId);
-                                break dayLoop;
+                            boolean close = false;
+                            if(end.equalsIgnoreCase("cl")) close = true;
+                            Timestamp endStamp = null;
+                            if(!end.equals("") && !close) {
+                                endStamp = HoursSection.formatTime(cal.getTime(), end);
+                                if (endStamp == null) {
+                                    prop.put("success", false);
+                                    prop.put("error", "Error in parsing ending time for " + name + " on day " + i);
+                                    if(schedule == null) deleteSchedule(insertId);
+                                    break dayLoop;
+                                }
                             }
-                            ScheduleTime time = new ScheduleTime(-1, insertId, employee.getId(), i, startStamp, endStamp, null, null);
+                            ScheduleTime time = new ScheduleTime(-1, insertId, employee.getId(), i, startStamp, endStamp, close,null, null);
                             days[i].add(time);
                         }
                     }
+                    if(schedule != null)
+                        LabourConnection.connection().delete("schedule_times", "schedule_id=?", schedule.getId());
                     for (int i = 0; i < 7; i++) {
                         ArrayList<ScheduleTime> day = days[i];
-                        for (ScheduleTime time : day)
+                        for (ScheduleTime time : day) {
+                            if(schedule != null) time.setScheduleId(schedule.getId());
                             LabourConnection.connection().insert("schedule_times", time.data());
+                        }
                     }
+                    if(changeBOH)
+                        LabourConnection.connection().set("schedules", "is_boh=?", "id=?", new Object[] { boh, schedule.getId() });
                 } catch(Exception e) {
                     e.printStackTrace();
-                    if(insertId != -1) deleteSchedule(insertId);
+                    if(insertId != -1 && schedule == null) deleteSchedule(insertId);
                     prop.put("success", false);
                     prop.put("error", "Error inserting schedule");
                     break;
                 }
-                prop.put("success", false);
-                prop.put("error", "Testing");
+                prop.put("success", true);
                 break;
         }
         return Tracker.getGson().toJson(prop);
