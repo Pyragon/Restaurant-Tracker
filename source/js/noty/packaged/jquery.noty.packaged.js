@@ -503,6 +503,7 @@
         type        : 'alert',
         text        : '',
         dismissQueue: true,
+        dismissOnOutsideClick: true,
         template    : '<div class="noty_message"><span class="noty_text"></span><div class="noty_close"></div></div>',
         animation   : {
             open  : {height: 'toggle'},

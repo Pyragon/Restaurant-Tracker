@@ -495,6 +495,7 @@
         theme       : 'defaultTheme',
         type        : 'alert',
         text        : '',
+        dismissOnOutsideClick: true,
         dismissQueue: true,
         template    : '<div class="noty_message"><span class="noty_text"></span><div class="noty_close"></div></div>',
         animation   : {

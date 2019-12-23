@@ -38,8 +38,10 @@ html
                     if($(e.target).closest('#'+id).length) {
 
                     } else {
-                        n.close();
-                        n = null;
+                        if(n.options.dismissOnOutsideClick) {
+                            n.close();
+                            n = null;
+                        }
                     }
                 });
 
