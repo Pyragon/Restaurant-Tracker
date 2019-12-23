@@ -16,7 +16,7 @@ import java.util.Properties;
 public class ErrorConnection extends DatabaseConnection {
 
     public ErrorConnection() {
-        super("smittys_global");
+        super("citycenter_global");
     }
 
     public static ErrorConnection connection() {

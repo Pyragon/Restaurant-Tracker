@@ -14,7 +14,7 @@ import java.util.Calendar;
 public class UserConnection extends DatabaseConnection {
 
     public UserConnection() {
-        super("smittys_global");
+        super("citycenter_global");
     }
 
     public static UserConnection connection() {

@@ -19,7 +19,7 @@ import java.util.Properties;
 public class InventoryConnection extends DatabaseConnection {
 
     public InventoryConnection() {
-        super("smittys_global");
+        super("citycenter_global");
     }
 
     public static InventoryConnection connection() {

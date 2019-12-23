@@ -16,7 +16,7 @@ import java.util.Properties;
 public class LabourConnection extends DatabaseConnection {
 
     public LabourConnection() {
-        super("smittys_global");
+        super("citycenter_global");
     }
 
     public static LabourConnection connection() {

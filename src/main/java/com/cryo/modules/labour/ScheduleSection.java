@@ -28,7 +28,7 @@ public class ScheduleSection implements WebSection {
     public String decode(String action, Request request, Response response) {
         Properties prop = new Properties();
         HashMap<String, Object> model = new HashMap<>();
-        switch (action) {
+        sw: switch (action) {
             case "load":
                 String html;
                 try {
@@ -170,9 +170,9 @@ public class ScheduleSection implements WebSection {
                             data = LabourConnection.connection().handleRequest("get-employee-by-name", name);
                             if (data == null) {
                                 prop.put("success", false);
-                                prop.put("error", "Unable to find employee for that name.");
+                                prop.put("error", "Unable to find employee for name: "+name+".");
                                 if(schedule == null) deleteSchedule(insertId);
-                                break dayLoop;
+                                break sw;
                             }
                             Employee employee = (Employee) data[0];
                             Timestamp startStamp = HoursSection.formatTime(cal.getTime(), start);
@@ -180,13 +180,13 @@ public class ScheduleSection implements WebSection {
                                 prop.put("success", false);
                                 prop.put("error", "Error in parsing starting time for " + name + " on day " + i);
                                 if(schedule == null) deleteSchedule(insertId);
-                                break dayLoop;
+                                break sw;
                             }
                             if (end.equals("") && isBoh) {
                                 prop.put("success", false);
                                 prop.put("error", "BOH schedules must have an endtime. Missing endtime for " + name + " on day " + i);
                                 if(schedule == null) deleteSchedule(insertId);
-                                break dayLoop;
+                                break sw;
                             }
                             boolean close = false;
                             if(end.equalsIgnoreCase("cl")) close = true;
@@ -197,7 +197,7 @@ public class ScheduleSection implements WebSection {
                                     prop.put("success", false);
                                     prop.put("error", "Error in parsing ending time for " + name + " on day " + i);
                                     if(schedule == null) deleteSchedule(insertId);
-                                    break dayLoop;
+                                    break sw;
                                 }
                             }
                             ScheduleTime time = new ScheduleTime(-1, insertId, employee.getId(), i, startStamp, endStamp, close,null, null);

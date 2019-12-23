@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 public class MiscConnection extends DatabaseConnection {
 
     public MiscConnection() {
-        super("smittys_global");
+        super("citycenter_global");
     }
 
     public static MiscConnection connection() {
